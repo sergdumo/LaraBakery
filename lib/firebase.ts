@@ -1,6 +1,7 @@
 import { getApps, initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getAnalytics, isSupported, type Analytics } from "firebase/analytics";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -16,3 +17,15 @@ export const firebaseApp = getApps().length ? getApps()[0] : initializeApp(fireb
 export const auth = getAuth(firebaseApp);
 export const db = getFirestore(firebaseApp);
 export const googleProvider = new GoogleAuthProvider();
+
+let analyticsPromise: Promise<Analytics | null> | null = null;
+
+export function getAnalyticsInstance(): Promise<Analytics | null> {
+  if (typeof window === "undefined") return Promise.resolve(null);
+  if (!analyticsPromise) {
+    analyticsPromise = isSupported().then((supported) =>
+      supported ? getAnalytics(firebaseApp) : null
+    );
+  }
+  return analyticsPromise;
+}

@@ -6,6 +6,7 @@ import { Product, formatCurrency } from "@/lib/data";
 import { darkActionStyle } from "@/lib/styles";
 import { useAuth } from "@/components/auth-provider";
 import { createOrder, getProducts } from "@/lib/firebase-store";
+import { logEvent } from "@/lib/analytics";
 
 type CartItem = {
   productId: string;
@@ -138,6 +139,7 @@ export function OrderForm({
       });
       setConfirmedId(orderId);
       setConfirmedName(String(formData.get("customerName") || ""));
+      logEvent("purchase", { transaction_id: orderId, value: total, currency: "COP" }).catch(() => {});
       setConfirmedItems(orderItems.map((item) => ({ name: item.productName, quantity: item.quantity })));
       setConfirmedDelivery({
         method: deliveryMethod === "domicilio" ? "Domicilio" : "Recoger en tienda",
