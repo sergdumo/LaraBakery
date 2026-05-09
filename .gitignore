@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+functions/node_modules/
+
+# Next.js
+.next/
+out/
+
+# Build
+functions/lib/
+tsconfig.tsbuildinfo
+
+# Environment variables (Firebase keys, etc.)
+.env.local
+.env.*.local
+
+# Firebase
+.firebase/
+
+# macOS
+.DS_Store
+
+# Backup/duplicate files
+firestore\ 2.rules
+firestore.indexes\ 2.json
+
+# Claude Code
+.claude/

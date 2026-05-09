@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 210">
+  <rect width="210" height="210" fill="#fff"/>
+  <!-- finder top-left -->
+  <rect x="10" y="10" width="56" height="56" fill="#1a1a1a" rx="4"/>
+  <rect x="17" y="17" width="42" height="42" fill="#fff" rx="2"/>
+  <rect x="24" y="24" width="28" height="28" fill="#1a1a1a" rx="2"/>
+  <!-- finder top-right -->
+  <rect x="144" y="10" width="56" height="56" fill="#1a1a1a" rx="4"/>
+  <rect x="151" y="17" width="42" height="42" fill="#fff" rx="2"/>
+  <rect x="158" y="24" width="28" height="28" fill="#1a1a1a" rx="2"/>
+  <!-- finder bottom-left -->
+  <rect x="10" y="144" width="56" height="56" fill="#1a1a1a" rx="4"/>
+  <rect x="17" y="151" width="42" height="42" fill="#fff" rx="2"/>
+  <rect x="24" y="158" width="28" height="28" fill="#1a1a1a" rx="2"/>
+  <!-- timing strips -->
+  <rect x="76" y="10" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="90" y="10" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="104" y="10" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="118" y="10" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="132" y="10" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="10" y="76" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="10" y="90" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="10" y="104" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="10" y="118" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="10" y="132" width="7" height="7" fill="#1a1a1a"/>
+  <!-- data area scattered modules -->
+  <rect x="76" y="24" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="90" y="17" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="104" y="31" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="118" y="17" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="132" y="24" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="76" y="38" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="118" y="38" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="90" y="52" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="104" y="45" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="132" y="52" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="76" y="76" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="90" y="83" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="104" y="76" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="118" y="90" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="132" y="76" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="144" y="83" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="158" y="76" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="172" y="90" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="186" y="76" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="76" y="97" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="104" y="104" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="144" y="97" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="172" y="104" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="186" y="97" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="90" y="111" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="118" y="111" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="158" y="111" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="76" y="118" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="132" y="118" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="144" y="118" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="186" y="118" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="104" y="125" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="172" y="125" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="90" y="132" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="118" y="132" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="158" y="132" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="186" y="132" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="76" y="144" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="104" y="144" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="144" y="144" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="172" y="144" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="90" y="151" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="118" y="158" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="132" y="151" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="158" y="158" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="186" y="151" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="76" y="165" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="104" y="172" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="144" y="165" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="172" y="172" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="90" y="179" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="118" y="186" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="132" y="179" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="158" y="186" width="7" height="7" fill="#1a1a1a"/>
+  <rect x="186" y="179" width="7" height="7" fill="#1a1a1a"/>
+  <!-- Nequi logo center -->
+  <rect x="86" y="86" width="38" height="38" fill="#fff"/>
+  <rect x="89" y="89" width="32" height="32" rx="6" fill="#e8175d"/>
+  <text x="105" y="111" text-anchor="middle" fill="#fff" font-size="18" font-weight="bold" font-family="Arial, sans-serif">N</text>
+</svg>
