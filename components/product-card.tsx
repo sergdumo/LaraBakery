@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Product, formatCurrency } from "@/lib/data";
 
 export function ProductCard({ product }: { product: Product }) {
@@ -7,11 +8,13 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <article className="group overflow-hidden rounded-lg border border-[#ead8c7] bg-white soft-shadow">
       <Link href={`/productos/${product.id}`} className="focus-ring block">
-        <div className="relative overflow-hidden">
-          <img
+        <div className="relative aspect-[4/3] w-full overflow-hidden">
+          <Image
             src={product.imageUrl}
             alt={product.name}
-            className="aspect-[4/3] w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+            fill
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            className="object-cover transition duration-300 group-hover:scale-[1.03]"
           />
           <span className="absolute left-3 top-3 rounded-full bg-white/92 px-3 py-1 text-xs font-semibold text-[#3b2924]">
             {product.category}

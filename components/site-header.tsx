@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { darkActionStyle } from "@/lib/styles";
 import { useAuth } from "@/components/auth-provider";
 
@@ -21,9 +22,11 @@ export function SiteHeader() {
       </div>
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         <Link href="/" className="focus-ring flex items-center gap-3 rounded-md">
-          <img
+          <Image
             src="/images/lara-bakery-logo.jpeg"
             alt="Lara Bakery"
+            width={48}
+            height={48}
             className="h-12 w-12 rounded-full border border-[#e5d2b6] object-cover"
           />
           <span>

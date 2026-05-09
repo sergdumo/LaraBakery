@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { formatCurrency, getProduct, products } from "@/lib/data";
@@ -73,11 +74,9 @@ export default async function ProductDetailPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
       />
-      <img
-        src={product.imageUrl}
-        alt={product.name}
-        className="aspect-[4/3] w-full rounded-lg object-cover soft-shadow"
-      />
+      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg soft-shadow">
+        <Image src={product.imageUrl} alt={product.name} fill className="object-cover" />
+      </div>
       <section className="rounded-lg border border-[#ead8c7] bg-white p-6 soft-shadow">
         <p className="text-sm font-semibold uppercase tracking-wide text-[#c9657e]">{product.category}</p>
         <h1 className="mt-2 text-3xl font-semibold">{product.name}</h1>

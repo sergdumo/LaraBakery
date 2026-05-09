@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 import { ProductGrid } from "@/components/product-grid";
 import { darkActionStyle } from "@/lib/styles";
@@ -95,11 +96,9 @@ export default function Home() {
             </div>
           </div>
           <div className="hidden overflow-hidden rounded-lg bg-white p-2 soft-shadow md:block">
-            <img
-              src="/images/lara-alfajores.jpeg"
-              alt="Alfajores Lara Bakery"
-              className="aspect-[4/5] w-full rounded-md object-cover"
-            />
+            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-md">
+              <Image src="/images/lara-alfajores.jpeg" alt="Alfajores Lara Bakery" fill className="object-cover" />
+            </div>
           </div>
         </div>
       </section>
@@ -117,7 +116,9 @@ export default function Home() {
               className="focus-ring group overflow-hidden rounded-lg bg-white soft-shadow"
             >
               <div className="relative">
-                <img src={category.image} alt={category.title} className="aspect-[4/3] w-full object-cover transition duration-300 group-hover:scale-[1.03]" />
+                <div className="relative aspect-[4/3] w-full">
+                  <Image src={category.image} alt={category.title} fill className="object-cover transition duration-300 group-hover:scale-[1.03]" />
+                </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-[#3b2924]/62 to-transparent" />
                 <h3 className="absolute bottom-4 left-4 text-2xl font-semibold text-white">{category.title}</h3>
               </div>
@@ -129,11 +130,14 @@ export default function Home() {
 
       <section className="bg-white">
         <div className="mx-auto grid max-w-6xl gap-8 px-4 py-8 md:grid-cols-[0.8fr_1fr] md:items-center md:py-12">
-          <img
-            src="https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=900&q=80"
-            alt="Mesa con postres artesanales"
-            className="aspect-[4/3] w-full rounded-lg object-cover soft-shadow"
-          />
+          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg soft-shadow">
+            <Image
+              src="https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=900&q=80"
+              alt="Mesa con postres artesanales"
+              fill
+              className="object-cover"
+            />
+          </div>
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-[#c9657e]">Hecho con cuidado</p>
             <h2 className="mt-2 text-3xl font-semibold">Un detalle dulce también puede sentirse personal</h2>

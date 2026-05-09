@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import { Product, formatCurrency } from "@/lib/data";
 import { darkActionStyle } from "@/lib/styles";
 import { useAuth } from "@/components/auth-provider";
@@ -29,6 +30,8 @@ export function OrderForm({
   const [deliveryMethod, setDeliveryMethod] = useState<"recoger" | "domicilio">("recoger");
   const [confirmedId, setConfirmedId] = useState<string | null>(null);
   const [confirmedName, setConfirmedName] = useState("");
+  const [confirmedItems, setConfirmedItems] = useState<Array<{ name: string; quantity: number }>>([]);
+  const [confirmedDelivery, setConfirmedDelivery] = useState<{ method: string; date: string }>({ method: "", date: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const { user, loading, signInWithGoogle } = useAuth();
@@ -135,6 +138,11 @@ export function OrderForm({
       });
       setConfirmedId(orderId);
       setConfirmedName(String(formData.get("customerName") || ""));
+      setConfirmedItems(orderItems.map((item) => ({ name: item.productName, quantity: item.quantity })));
+      setConfirmedDelivery({
+        method: deliveryMethod === "domicilio" ? "Domicilio" : "Recoger en tienda",
+        date: String(formData.get("requestedDeliveryDate") || "")
+      });
     } catch (currentError) {
       setError(currentError instanceof Error ? currentError.message : "No se pudo guardar el pedido.");
     } finally {
@@ -146,14 +154,17 @@ export function OrderForm({
     const whatsappBase = process.env.NEXT_PUBLIC_WHATSAPP_URL;
     const nequiNumber = process.env.NEXT_PUBLIC_PAYMENT_NEQUI;
     const paymentName = process.env.NEXT_PUBLIC_PAYMENT_NAME || "Lara Bakery";
+    const itemsList = confirmedItems.map((item) => `  - ${item.quantity}x ${item.name}`).join("\n");
     const comprobanteMsgUrl =
       whatsappBase?.startsWith("https://wa.me/")
         ? `${whatsappBase}?text=${encodeURIComponent(
-            `Hola Lara Bakery! Te comparto el comprobante de pago de mi pedido.\n\n` +
+            `Hola Lara Bakery! Acabo de registrar un pedido.\n\n` +
             `Pedido: ${confirmedId}\n` +
             `Cliente: ${confirmedName}\n` +
+            `Productos:\n${itemsList}\n` +
+            `Entrega: ${confirmedDelivery.method} — ${confirmedDelivery.date}\n` +
             `Total: ${formatCurrency(total)}\n\n` +
-            `Gracias!`
+            `Quedo pendiente de confirmación. ¡Gracias!`
           )}`
         : whatsappBase;
 
@@ -179,7 +190,7 @@ export function OrderForm({
                 </div>
                 <p className="px-1 text-xs text-[#74635c]">A nombre de: {paymentName}</p>
               </div>
-              <img src="/images/nequi-qr.svg" alt="QR Nequi Lara Bakery" className="h-24 w-24 rounded-lg border border-[#ead8c7] object-contain bg-white p-1" />
+              <Image src="/images/nequi-qr.svg" alt="QR Nequi Lara Bakery" width={96} height={96} className="rounded-lg border border-[#ead8c7] bg-white object-contain p-1" />
             </div>
           ) : (
             <p className="mt-3 text-sm leading-6 text-[#74635c]">
@@ -216,7 +227,9 @@ export function OrderForm({
           return (
             <div key={`${item.productId}-${index}`} className="rounded-lg border border-[#ead8c7] bg-white p-4 soft-shadow">
               <div className="grid gap-4 sm:grid-cols-[92px_1fr]">
-                <img src={product.imageUrl} alt={product.name} className="h-24 w-full rounded-md object-cover sm:w-24" />
+                <div className="relative h-24 w-full overflow-hidden rounded-md sm:w-24">
+                  <Image src={product.imageUrl} alt={product.name} fill className="object-cover" />
+                </div>
                 <div className="grid gap-3">
                   <label className="grid gap-1 text-sm font-semibold">
                     Producto

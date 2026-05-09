@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { StatusPill } from "@/components/status-pill";
 import { formatCurrency, Product } from "@/lib/data";
 import { getProducts, updateProduct, createProduct } from "@/lib/firebase-store";
@@ -281,11 +282,9 @@ export default function AdminProductsPage() {
                 </div>
               ) : (
                 <div className="grid gap-4 sm:grid-cols-[96px_1fr_auto] sm:items-center">
-                  <img
-                    src={product.imageUrl}
-                    alt={product.name}
-                    className="h-24 w-full rounded-md object-cover sm:w-24"
-                  />
+                  <div className="relative h-24 w-full overflow-hidden rounded-md sm:w-24">
+                    <Image src={product.imageUrl} alt={product.name} fill className="object-cover" />
+                  </div>
                   <div>
                     <h2 className="font-semibold">{product.name}</h2>
                     <p className="mt-1 text-sm text-[#74635c]">{product.presentation} · {formatCurrency(product.price)}</p>
