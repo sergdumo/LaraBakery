@@ -21,8 +21,9 @@ tsconfig.tsbuildinfo
 .DS_Store
 
 # Backup/duplicate files
-firestore\ 2.rules
-firestore.indexes\ 2.json
+*\ 2.rules
+*\ 2.json
+*\ 2.tsx
 
 # Claude Code
 .claude/
