@@ -1,0 +1,13 @@
+{
+  "projects": {},
+  "targets": {
+    "larabakery-d98a0": {
+      "hosting": {
+        "larabakery": [
+          "larabakery-d98a0"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

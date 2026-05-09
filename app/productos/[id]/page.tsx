@@ -115,16 +115,6 @@ export default async function ProductDetailPage({ params }: Props) {
             </div>
           </div>
         )}
-        <div className="mt-6">
-          <h2 className="text-sm font-semibold">Ingredientes principales</h2>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {product.ingredients.map((ingredient) => (
-              <span key={ingredient} className="rounded-full bg-[#fff9f3] px-3 py-1 text-sm text-[#5f4b44]">
-                {ingredient}
-              </span>
-            ))}
-          </div>
-        </div>
         <Link
           href={`/pedido?producto=${product.id}`}
           className="focus-ring dark-action mt-8 block rounded-full px-6 py-3 text-center text-sm font-semibold transition"
