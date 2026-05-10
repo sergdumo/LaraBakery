@@ -107,12 +107,6 @@ export default function AdminOrdersPage() {
     );
   }
 
-  function stepQuantity(index: number, delta: number) {
-    const next = Math.max(1, manualItems[index].quantity + delta);
-    updateManualItem(index, { quantity: next });
-    setQuantityTexts((q) => ({ ...q, [index]: String(next) }));
-  }
-
   function addManualItem() {
     const product = products[0];
     if (!product) return;
@@ -278,29 +272,25 @@ export default function AdminOrdersPage() {
                       <span className="rounded-md border border-[#ead8c7] bg-white px-3 py-2 font-normal text-[#74635c]">No aplica</span>
                     </div>
                   )}
-                  <div className="grid gap-1 text-sm font-semibold">
+                  <label className="grid gap-1 text-sm font-semibold">
                     Cant.
-                    <div className="flex items-center gap-1 rounded-md border border-[#ead8c7] bg-white p-1">
-                      <button type="button" onClick={() => stepQuantity(index, -1)} className="focus-ring flex h-7 w-7 flex-shrink-0 items-center justify-center rounded text-base font-bold text-[#74635c] hover:bg-[#ead8c7]">−</button>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        value={quantityTexts[index] ?? String(item.quantity)}
-                        onChange={(e) => {
-                          const raw = e.target.value.replace(/[^0-9]/g, "");
-                          setQuantityTexts((q) => ({ ...q, [index]: raw }));
-                          if (raw !== "" && Number(raw) >= 1) updateManualItem(index, { quantity: Number(raw) });
-                        }}
-                        onBlur={() => {
-                          const num = Math.max(1, Number(quantityTexts[index]) || 1);
-                          setQuantityTexts((q) => ({ ...q, [index]: String(num) }));
-                          updateManualItem(index, { quantity: num });
-                        }}
-                        className="w-10 min-w-0 bg-transparent text-center text-sm font-semibold outline-none"
-                      />
-                      <button type="button" onClick={() => stepQuantity(index, 1)} className="focus-ring flex h-7 w-7 flex-shrink-0 items-center justify-center rounded bg-[#f4b6c4] text-base font-bold text-[#3b2924] hover:bg-[#ef9eb2]">+</button>
-                    </div>
-                  </div>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={quantityTexts[index] ?? String(item.quantity)}
+                      onChange={(e) => {
+                        const raw = e.target.value.replace(/[^0-9]/g, "");
+                        setQuantityTexts((q) => ({ ...q, [index]: raw }));
+                        if (raw !== "" && Number(raw) >= 1) updateManualItem(index, { quantity: Number(raw) });
+                      }}
+                      onBlur={() => {
+                        const num = Math.max(1, Number(quantityTexts[index]) || 1);
+                        setQuantityTexts((q) => ({ ...q, [index]: String(num) }));
+                        updateManualItem(index, { quantity: num });
+                      }}
+                      className="focus-ring rounded-md border border-[#ead8c7] bg-white px-3 py-2 text-center font-normal"
+                    />
+                  </label>
                   <label className="grid gap-1 text-sm font-semibold md:col-span-2">
                     Nota del producto
                     <input value={item.notes} onChange={(event) => updateManualItem(index, { notes: event.target.value })} placeholder="Dedicatoria, sabor, detalle..." className="focus-ring rounded-md border border-[#ead8c7] bg-white px-3 py-2 font-normal" />
