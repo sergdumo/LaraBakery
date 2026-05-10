@@ -183,22 +183,20 @@ export function OrderForm({
 
         <div className="mt-6 rounded-lg border border-[#ead8c7] bg-[#fff9f3] p-5">
           <p className="text-xs font-semibold uppercase tracking-wide text-[#74635c]">Cómo pagar</p>
-          {nequiNumber ? (
-            <div className="mt-3 grid gap-4 sm:grid-cols-[1fr_auto]">
-              <div className="grid gap-2">
-                <div className="flex items-center justify-between gap-3 rounded-md bg-white px-4 py-3">
-                  <span className="text-sm font-semibold">Nequi</span>
-                  <span className="font-semibold tracking-wide">{nequiNumber}</span>
-                </div>
-                <p className="px-1 text-xs text-[#74635c]">A nombre de: {paymentName}</p>
-              </div>
-              <Image src="/images/nequi-qr.svg" alt="QR Nequi Lara Bakery" width={96} height={96} className="rounded-lg border border-[#ead8c7] bg-white object-contain p-1" />
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="flex flex-col items-center gap-3 rounded-md border border-[#ead8c7] bg-white p-4">
+              <span className="text-sm font-semibold text-[#3b2924]">Bre-b</span>
+              <Image src="/images/QR.jpeg" alt="QR Bre-b Lara Bakery" width={128} height={128} className="rounded" />
+              <p className="text-center text-xs text-[#74635c]">Escanea con Bre-b</p>
             </div>
-          ) : (
-            <p className="mt-3 text-sm leading-6 text-[#74635c]">
-              Lara Bakery te enviará los datos de pago por WhatsApp al confirmar tu pedido.
-            </p>
-          )}
+            {nequiNumber && (
+              <div className="flex flex-col items-center gap-3 rounded-md border border-[#ead8c7] bg-white p-4">
+                <Image src="/images/nequi-logo.svg" alt="Nequi" width={110} height={36} />
+                <p className="text-lg font-semibold tracking-wide text-[#3b2924]">{nequiNumber}</p>
+                <p className="text-center text-xs text-[#74635c]">A nombre de: {paymentName}</p>
+              </div>
+            )}
+          </div>
           <div className="mt-4 flex items-center justify-between border-t border-[#ead8c7] pt-4">
             <span className="text-sm text-[#74635c]">Total a pagar</span>
             <strong className="text-2xl">{formatCurrency(total)}</strong>
