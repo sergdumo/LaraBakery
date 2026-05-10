@@ -18,6 +18,14 @@
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "cleanUrls": true,
       "trailingSlash": false
+    },
+    {
+      "target": "larabakery-default",
+      "public": "redirect-public",
+      "ignore": ["firebase.json", "**/.*"],
+      "redirects": [
+        { "source": "/**", "destination": "https://larabakery.web.app", "type": 301 }
+      ]
     }
   ]
 }
