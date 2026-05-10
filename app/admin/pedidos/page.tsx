@@ -201,8 +201,8 @@ export default function AdminOrdersPage() {
               <input name="customerName" required className="focus-ring rounded-md border border-[#ead8c7] bg-[#fff9f3] px-3 py-2 font-normal" />
             </label>
             <label className="grid gap-1 text-sm font-semibold">
-              WhatsApp *
-              <input name="customerPhone" required className="focus-ring rounded-md border border-[#ead8c7] bg-[#fff9f3] px-3 py-2 font-normal" />
+              WhatsApp
+              <input name="customerPhone" placeholder="Opcional" className="focus-ring rounded-md border border-[#ead8c7] bg-[#fff9f3] px-3 py-2 font-normal" />
             </label>
             <label className="grid gap-1 text-sm font-semibold">
               Email
