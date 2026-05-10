@@ -191,7 +191,7 @@ export function OrderForm({
             </div>
             {nequiNumber && (
               <div className="flex flex-col items-center gap-3 rounded-md border border-[#ead8c7] bg-white p-4">
-                <Image src="/images/nequi-logo.svg" alt="Nequi" width={110} height={36} />
+                <Image src="/images/nequi-logo.png" alt="Nequi" width={110} height={36} />
                 <p className="text-lg font-semibold tracking-wide text-[#3b2924]">{nequiNumber}</p>
                 <p className="text-center text-xs text-[#74635c]">A nombre de: {paymentName}</p>
               </div>
