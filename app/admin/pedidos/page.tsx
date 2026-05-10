@@ -34,7 +34,6 @@ export default function AdminOrdersPage() {
   const [showManualForm, setShowManualForm] = useState(false);
   const [manualDeliveryMethod, setManualDeliveryMethod] = useState<"recoger" | "domicilio">("recoger");
   const [manualItems, setManualItems] = useState<ManualItem[]>([]);
-  const [quantityTexts, setQuantityTexts] = useState<Record<number, string>>({});
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<OrderStatus | "">("");
@@ -275,17 +274,17 @@ export default function AdminOrdersPage() {
                   <label className="grid gap-1 text-sm font-semibold">
                     Cant.
                     <input
+                      key={`qty-${index}-${item.productId}`}
                       type="text"
                       inputMode="numeric"
-                      value={quantityTexts[index] ?? String(item.quantity)}
+                      defaultValue={String(item.quantity)}
                       onChange={(e) => {
-                        const raw = e.target.value.replace(/[^0-9]/g, "");
-                        setQuantityTexts((q) => ({ ...q, [index]: raw }));
-                        if (raw !== "" && Number(raw) >= 1) updateManualItem(index, { quantity: Number(raw) });
+                        const num = parseInt(e.target.value.replace(/[^0-9]/g, ""), 10);
+                        if (!isNaN(num) && num >= 1) updateManualItem(index, { quantity: num });
                       }}
-                      onBlur={() => {
-                        const num = Math.max(1, Number(quantityTexts[index]) || 1);
-                        setQuantityTexts((q) => ({ ...q, [index]: String(num) }));
+                      onBlur={(e) => {
+                        const num = Math.max(1, parseInt(e.target.value, 10) || 1);
+                        e.target.value = String(num);
                         updateManualItem(index, { quantity: num });
                       }}
                       className="focus-ring rounded-md border border-[#ead8c7] bg-white px-3 py-2 text-center font-normal"
