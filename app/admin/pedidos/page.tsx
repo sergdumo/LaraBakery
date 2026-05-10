@@ -271,14 +271,18 @@ export default function AdminOrdersPage() {
                       <span className="rounded-md border border-[#ead8c7] bg-white px-3 py-2 font-normal text-[#74635c]">No aplica</span>
                     </div>
                   )}
-                  <div className="grid gap-1 text-sm font-semibold">
+                  <label className="grid gap-1 text-sm font-semibold">
                     Cant.
-                    <div className="flex items-center gap-1 rounded-md border border-[#ead8c7] bg-[#fff9f3] p-1">
-                      <button type="button" onClick={() => updateManualItem(index, { quantity: Math.max(1, item.quantity - 1) })} className="focus-ring flex h-8 w-8 items-center justify-center rounded text-base font-bold text-[#74635c] hover:bg-[#ead8c7]">−</button>
-                      <span className="flex-1 text-center text-sm font-semibold">{item.quantity}</span>
-                      <button type="button" onClick={() => updateManualItem(index, { quantity: item.quantity + 1 })} className="focus-ring flex h-8 w-8 items-center justify-center rounded-md bg-[#f4b6c4] text-base font-bold text-[#3b2924] hover:bg-[#ef9eb2]">+</button>
-                    </div>
-                  </div>
+                    <select
+                      value={item.quantity}
+                      onChange={(e) => updateManualItem(index, { quantity: parseInt(e.target.value) })}
+                      className="focus-ring rounded-md border border-[#ead8c7] bg-white px-3 py-2 font-normal"
+                    >
+                      {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => (
+                        <option key={n} value={n}>{n}</option>
+                      ))}
+                    </select>
+                  </label>
                   <label className="grid gap-1 text-sm font-semibold md:col-span-2">
                     Nota del producto
                     <input value={item.notes} onChange={(event) => updateManualItem(index, { notes: event.target.value })} placeholder="Dedicatoria, sabor, detalle..." className="focus-ring rounded-md border border-[#ead8c7] bg-white px-3 py-2 font-normal" />

@@ -184,15 +184,18 @@ export function OrderForm({
         <div className="mt-6 rounded-lg border border-[#ead8c7] bg-[#fff9f3] p-5">
           <p className="text-xs font-semibold uppercase tracking-wide text-[#74635c]">Cómo pagar</p>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <div className="flex flex-col items-center gap-3 rounded-md border border-[#ead8c7] bg-white p-4">
+            <div className="flex flex-col items-center justify-between gap-3 rounded-md border border-[#ead8c7] bg-white p-4">
               <span className="text-sm font-semibold text-[#3b2924]">Bre-b</span>
-              <Image src="/images/QR.jpeg" alt="QR Bre-b Lara Bakery" width={128} height={128} className="rounded" />
-              <p className="text-center text-xs text-[#74635c]">Escanea con Bre-b</p>
+              <Image src="/images/QR.jpeg" alt="QR Bre-b Lara Bakery" width={140} height={140} className="rounded" />
+              <p className="text-center text-xs text-[#74635c]">Escanea el QR con Bre-b</p>
             </div>
             {nequiNumber && (
-              <div className="flex flex-col items-center gap-3 rounded-md border border-[#ead8c7] bg-white p-4">
-                <Image src="/images/nequi-logo.png" alt="Nequi" width={110} height={36} />
-                <p className="text-lg font-semibold tracking-wide text-[#3b2924]">{nequiNumber}</p>
+              <div className="flex flex-col items-center justify-between gap-3 rounded-md border border-[#ead8c7] bg-white p-4">
+                <span className="text-sm font-semibold text-[#3b2924]">Nequi</span>
+                <div className="flex flex-1 flex-col items-center justify-center gap-2">
+                  <Image src="/images/nequi-logo.png" alt="Nequi" width={120} height={40} className="object-contain" />
+                  <p className="text-lg font-semibold tracking-wide text-[#3b2924]">{nequiNumber}</p>
+                </div>
                 <p className="text-center text-xs text-[#74635c]">A nombre de: {paymentName}</p>
               </div>
             )}
