@@ -11,6 +11,7 @@ export default function MyOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(false);
   const [editingId, setEditingId] = useState("");
+  const [editingQuantities, setEditingQuantities] = useState<Record<number, number>>({});
   const [savingId, setSavingId] = useState("");
   const [deletingId, setDeletingId] = useState("");
   const [error, setError] = useState("");
@@ -182,10 +183,15 @@ export default function MyOrdersPage() {
                       {order.items.map((item, index) => (
                         <div key={`${order.id}-edit-${item.productId}-${index}`} className="grid gap-3 rounded-md bg-[#fff9f3] p-3 sm:grid-cols-[1fr_100px]">
                           <p className="self-end text-sm font-semibold">{item.productName}</p>
-                          <label className="grid gap-1 text-sm font-semibold">
+                          <div className="grid gap-1 text-sm font-semibold">
                             Cantidad
-                            <input name={`item-${index}-quantity`} type="number" min="1" defaultValue={item.quantity} required className="focus-ring rounded-md border border-[#ead8c7] bg-white px-3 py-2 font-normal" />
-                          </label>
+                            <div className="flex items-center gap-1 rounded-md border border-[#ead8c7] bg-white p-1">
+                              <button type="button" onClick={() => setEditingQuantities((q) => ({ ...q, [index]: Math.max(1, (q[index] ?? item.quantity) - 1) }))} className="focus-ring flex h-7 w-7 items-center justify-center rounded text-base font-bold text-[#74635c] hover:bg-[#ead8c7]">−</button>
+                              <span className="flex-1 text-center text-sm font-semibold">{editingQuantities[index] ?? item.quantity}</span>
+                              <button type="button" onClick={() => setEditingQuantities((q) => ({ ...q, [index]: (q[index] ?? item.quantity) + 1 }))} className="focus-ring flex h-7 w-7 items-center justify-center rounded bg-[#f4b6c4] text-base font-bold text-[#3b2924] hover:bg-[#ef9eb2]">+</button>
+                            </div>
+                            <input type="hidden" name={`item-${index}-quantity`} value={editingQuantities[index] ?? item.quantity} />
+                          </div>
                           <label className="grid gap-1 text-sm font-semibold sm:col-span-2">
                             Nota del producto
                             <input name={`item-${index}-notes`} defaultValue={item.notes || ""} className="focus-ring rounded-md border border-[#ead8c7] bg-white px-3 py-2 font-normal" />
@@ -204,7 +210,7 @@ export default function MyOrdersPage() {
                   </form>
                 ) : (
                   <div className="flex flex-wrap gap-2">
-                    <button type="button" onClick={() => setEditingId(order.id)} className="focus-ring rounded-full border border-[#ead8c7] px-5 py-2 text-sm font-semibold">
+                    <button type="button" onClick={() => { setEditingId(order.id); setEditingQuantities(Object.fromEntries(order.items.map((item, i) => [i, item.quantity]))); }} className="focus-ring rounded-full border border-[#ead8c7] px-5 py-2 text-sm font-semibold">
                       Editar datos
                     </button>
                     <button type="button" onClick={() => removeOrder(order)} disabled={deletingId === order.id} className="focus-ring rounded-full border border-[#c9657e] px-5 py-2 text-sm font-semibold text-[#c9657e] disabled:opacity-60">

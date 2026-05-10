@@ -271,10 +271,14 @@ export default function AdminOrdersPage() {
                       <span className="rounded-md border border-[#ead8c7] bg-white px-3 py-2 font-normal text-[#74635c]">No aplica</span>
                     </div>
                   )}
-                  <label className="grid gap-1 text-sm font-semibold">
+                  <div className="grid gap-1 text-sm font-semibold">
                     Cant.
-                    <input type="number" min="1" value={item.quantity} onChange={(event) => updateManualItem(index, { quantity: Number(event.target.value) })} className="focus-ring rounded-md border border-[#ead8c7] bg-white px-3 py-2 font-normal" />
-                  </label>
+                    <div className="flex items-center gap-1 rounded-md border border-[#ead8c7] bg-white p-1">
+                      <button type="button" onClick={() => updateManualItem(index, { quantity: item.quantity - 1 })} className="focus-ring flex h-7 w-7 items-center justify-center rounded text-base font-bold text-[#74635c] hover:bg-[#ead8c7]">−</button>
+                      <span className="flex-1 text-center text-sm font-semibold">{item.quantity}</span>
+                      <button type="button" onClick={() => updateManualItem(index, { quantity: item.quantity + 1 })} className="focus-ring flex h-7 w-7 items-center justify-center rounded bg-[#f4b6c4] text-base font-bold text-[#3b2924] hover:bg-[#ef9eb2]">+</button>
+                    </div>
+                  </div>
                   <label className="grid gap-1 text-sm font-semibold md:col-span-2">
                     Nota del producto
                     <input value={item.notes} onChange={(event) => updateManualItem(index, { notes: event.target.value })} placeholder="Dedicatoria, sabor, detalle..." className="focus-ring rounded-md border border-[#ead8c7] bg-white px-3 py-2 font-normal" />
