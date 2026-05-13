@@ -9,7 +9,7 @@ export function SiteFooter() {
           <div>
             <p className="font-semibold text-[#3b2924]">Lara Bakery</p>
             <p className="mt-1 text-sm text-[#74635c]">Repostería artesanal · Medellín, Colombia</p>
-            <p className="mt-1 text-sm text-[#74635c]">Pedidos con mínimo 24 h de anticipación</p>
+            <p className="mt-1 text-sm text-[#74635c]">Pedidos con mínimo 48 h de anticipación</p>
           </div>
           <div className="flex flex-col gap-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-[#74635c]">Contacto</p>

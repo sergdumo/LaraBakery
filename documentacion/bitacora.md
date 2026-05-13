@@ -2,6 +2,42 @@
 
 ---
 
+## 2026-05-12 — Sesión 4: notificaciones, pedidos y dashboard operativo
+
+### Completado en esta sesión
+
+**Notificaciones por e-mail**
+- Firebase Function productiva `notifyAdminOnNewOrder` para pedidos nuevos.
+- Secrets requeridos: `GMAIL_USER` y `GMAIL_PASS`.
+- Envío de correo a admins con ID de pedido, cliente, WhatsApp, e-mail, productos, fecha, entrega y total.
+- Control de duplicados en `notification_logs/order-{orderId}-admin-email`.
+- Estados de log: `sending`, `sent`, `failed`.
+- Runtime Functions ajustado a Node 22.
+
+**Creación de pedidos**
+- `createOrder()` ahora guarda documento padre e items en una sola escritura batch.
+- `firestore.rules` usa `getAfter()` para permitir que cliente cree items dentro del mismo batch.
+- El formulario bloquea doble submit con un candado inmediato para evitar pedidos duplicados por doble click.
+- Texto del botón cambia a "Registrando..." mientras Firestore guarda.
+
+**Anticipación mínima**
+- Regla pública actualizada de 24h a 48h.
+- Actualizados cálculo de `minDate`, formulario de pedido, header, footer, home, catálogo, página de pedido y documentación.
+
+**Admin /pedidos**
+- Lista ordenada por pedidos más nuevos (`created_at desc`) por defecto.
+- Nuevo filtro por estado de pago.
+- Orden opcional por entrega próxima o entrega lejana.
+- Soporte de parámetros `?estado=...` y `?pago=...` para llegar desde el dashboard con filtros aplicados.
+
+**Dashboard admin**
+- Distribución de estados y pagos convertida en control interactivo.
+- Al seleccionar un estado o pago, se muestra listado de clientes/pedidos dentro de ese segmento.
+- Cada pedido del segmento enlaza al detalle.
+- Botón "Ver filtro" abre `/admin/pedidos` con el filtro equivalente.
+
+---
+
 ## 2026-05-09 — Sesión 3: edición de pedidos y operación manual
 
 ### Completado en esta sesión
@@ -81,8 +117,8 @@
 - Muestra tanto estado del pedido como estado del pago.
 
 **Formulario de pedido**
-- Campo fecha con `min` dinámico = mañana en timezone Colombia. Bloquea seleccionar fechas sin anticipación de 24h.
-- Texto de ayuda "Mínimo 24 h de anticipación" bajo el input.
+- Campo fecha con `min` dinámico = 48h en timezone Colombia. Bloquea seleccionar fechas sin anticipación de 48h.
+- Texto de ayuda "Mínimo 48 h de anticipación" bajo el input.
 
 **Footer**
 - Nuevo componente `SiteFooter` con WhatsApp y copyright.

@@ -1,6 +1,6 @@
 # Estado del MVP
 
-Fecha de corte: 2026-05-09
+Fecha de corte: 2026-05-12
 
 ---
 
@@ -24,10 +24,12 @@ El sitio está operativo y conectado a Firebase. Clientes pueden navegar el cat�
 ### Flujo de pedido
 - Formulario con selección de producto, cantidad (+/−), observaciones por ítem, fecha, método de entrega y notas generales.
 - Soporte de variantes/tamaños por producto, con precio propio por variante.
-- Validación de fecha mínima: bloquea fechas anteriores a mañana (24h, timezone Colombia).
+- Validación de fecha mínima: bloquea fechas anteriores a 48h (timezone Colombia).
+- Bloqueo inmediato de doble submit mientras se registra el pedido para evitar pedidos duplicados por doble click.
 - Barra sticky en mobile con total y botón de confirmar.
 - Creación real de pedido en Firestore con ID secuencial formato `LB-YYMMDD-NN`.
 - Pantalla de confirmación con número de pedido, datos Nequi (número + QR placeholder) y botón para enviar comprobante por WhatsApp con mensaje prellenado.
+- Notificación automática por e-mail a los admins cuando se crea un pedido.
 
 ### Autenticación
 - Login con Google vía Firebase Auth.
@@ -40,8 +42,8 @@ El sitio está operativo y conectado a Firebase. Clientes pueden navegar el cat�
 - Navegación admin mobile: tabs horizontales con scroll; vertical en desktop.
 - Link al admin visible en header y bottom nav cuando el usuario es admin.
 
-- **Dashboard** (`/admin`): resumen por mes/año con ventas, ganancia estimada, ticket promedio, pedidos activos/entregados, cobros, costos, cobertura de costos, gráfica de ventas diarias, distribución por estado/pago, productos más pedidos, productos por ingresos y últimos pedidos.
-- **Pedidos** (`/admin/pedidos`): lista desde Firestore, búsqueda por ID/nombre/teléfono, filtro por estado, cambio de estado y pago inline, link a detalle.
+- **Dashboard** (`/admin`): resumen por mes/año con ventas, ganancia estimada, ticket promedio, pedidos activos/entregados, cobros, costos, cobertura de costos, gráfica de ventas diarias, distribución interactiva por estado/pago, listado de pedidos del segmento seleccionado, productos más pedidos, productos por ingresos y últimos pedidos.
+- **Pedidos** (`/admin/pedidos`): lista desde Firestore ordenada por pedidos más nuevos, búsqueda por ID/nombre/teléfono, filtro por estado, filtro por pago, orden por creación o entrega, cambio de estado y pago inline, link a detalle.
 - **Pedidos manuales** (`/admin/pedidos?nuevo=1`): el admin puede crear pedidos recibidos por fuera del sitio, con productos, variantes, entrega, estado, pago y notas internas.
 - **Detalle de pedido** (`/admin/pedidos/[id]`): carga desde Firestore, productos, cliente, edición de datos/items, cambio de estado/pago, notas internas editables y eliminación.
 - **Productos** (`/admin/productos`): lista desde Firestore, toggle disponible/activar, edición inline (nombre, precio, descripción, presentación, imagen, horas prep, destacado), formulario para crear producto nuevo.
@@ -57,7 +59,9 @@ El sitio está operativo y conectado a Firebase. Clientes pueden navegar el cat�
 - Reglas Firestore sólidas: lectura pública de productos, pedidos solo del dueño o admin, costos solo admin.
 - Export estático con `output: "export"` compatible con Firebase Hosting.
 - Variables de entorno para WhatsApp, Nequi y credenciales Firebase.
-- Scaffold de Firebase Functions creado en `functions/` con TypeScript, Genkit y dependencias instaladas; todavía no hay función productiva activa.
+- Firebase Functions 2nd Gen activa para notificaciones por e-mail al crear pedidos.
+- Secretos productivos esperados: `GMAIL_USER` y `GMAIL_PASS`.
+- Registro de envíos en `notification_logs` para evitar correos duplicados y diagnosticar fallos SMTP.
 - SEO técnico inicial: metadata por páginas públicas, metadata por producto, canonicals, OpenGraph, Twitter cards, JSON-LD de negocio local/producto, `sitemap.xml` y `robots.txt`.
 
 ---
@@ -69,12 +73,12 @@ El sitio está operativo y conectado a Firebase. Clientes pueden navegar el cat�
 | QR Nequi real | Reemplazar `/public/images/nequi-qr.svg` con el QR real de Lara |
 | `/productos/[id]` desde Firestore | Hoy usa datos de `lib/data.ts`; funciona pero no refleja ediciones del admin |
 | SEO de productos Firestore | Las páginas SEO se generan desde `lib/data.ts`; productos creados solo en Firestore no aparecen en sitemap ni metadata hasta incorporarlos al build |
-| Validación 24h en el servidor | Hoy es solo client-side en el input `min`; podría bypassearse |
+| Validación 48h en el servidor | Hoy es solo client-side en el input `min`; podría bypassearse |
 | Gestión de roles desde UI | Hoy se agrega admin editando código; no hay UI para eso |
 | Filtros en catálogo de productos | Por categoría o búsqueda |
 | Índices Firestore en producción | Si el volumen de pedidos crece, pueden necesitarse índices compuestos |
 | Instagram | Ya está incluido en footer; mantener actualizado si cambia el handle |
-| Funciones backend reales | El directorio `functions/` existe, pero aún no hay notificaciones automáticas ni validaciones server-side productivas |
+| Validaciones backend reales | Ya existe Function de notificación; todavía falta mover validaciones críticas del cliente a backend |
 
 ---
 

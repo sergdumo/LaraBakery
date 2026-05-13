@@ -17,7 +17,7 @@ export default function OrderPage() {
         <p className="text-sm font-semibold uppercase tracking-wide text-[#c9657e]">Pedido</p>
         <h1 className="mt-2 text-3xl font-semibold">Arma tu pedido en Medellín</h1>
         <p className="mt-3 leading-7 text-[#74635c]">
-          Los pedidos deben hacerse con minimo 24 horas de anticipacion. Lara Bakery confirmara disponibilidad por WhatsApp.
+          Los pedidos deben hacerse con minimo 48 horas de anticipacion. Lara Bakery confirmara disponibilidad por WhatsApp.
         </p>
       </div>
       <OrderForm products={products.filter((product) => product.isAvailable)} />

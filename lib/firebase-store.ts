@@ -249,8 +249,9 @@ async function generateOrderId(): Promise<string> {
 export async function createOrder(input: NewOrderInput) {
   const orderId = await generateOrderId();
   const orderRef = doc(db, "orders", orderId);
+  const batch = writeBatch(db);
 
-  await setDoc(orderRef, {
+  batch.set(orderRef, {
     user_id: input.user.uid,
     customer_name: input.customerName,
     customer_email: input.customerEmail,
@@ -269,7 +270,6 @@ export async function createOrder(input: NewOrderInput) {
     updated_at: serverTimestamp()
   });
 
-  const batch = writeBatch(db);
   input.items.forEach((item) => {
     const itemRef = doc(collection(db, "orders", orderId, "items"));
     batch.set(itemRef, {
@@ -372,7 +372,7 @@ export async function getOrdersForUser(uid: string): Promise<Order[]> {
 }
 
 export async function getAllOrders(): Promise<Order[]> {
-  const snapshot = await getDocs(query(collection(db, "orders"), orderBy("requested_delivery_date", "desc")));
+  const snapshot = await getDocs(query(collection(db, "orders"), orderBy("created_at", "desc")));
   return Promise.all(snapshot.docs.map(async (entry) => toOrder(entry.id, entry.data(), await getOrderItems(entry.id))));
 }
 

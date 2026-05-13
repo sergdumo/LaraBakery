@@ -10,6 +10,7 @@
 | Autenticación | Firebase Auth (Google Sign-In) |
 | Base de datos | Firebase Firestore |
 | Hosting | Firebase Hosting — https://larabakery.web.app |
+| Automatización | Firebase Functions 2nd Gen |
 | Fallback de datos | `lib/data.ts` |
 
 El sitio genera HTML/JS estático en el build y Firebase lo sirve sin servidor. Toda la lógica de datos es client-side con el SDK de Firestore.
@@ -60,8 +61,8 @@ RepoLaraBakery/
 │   ├── firebase.ts                     ← Inicialización Firebase
 │   ├── firebase-store.ts               ← Todas las operaciones Firestore
 │   └── styles.ts                       ← Estilos compartidos (darkActionStyle)
-├── functions/                          ← Scaffold Firebase Functions / Genkit
-│   └── src/index.ts                    ← Sin funciones productivas activas
+├── functions/                          ← Firebase Functions / Genkit
+│   └── src/index.ts                    ← notifyAdminOnNewOrder
 ├── public/images/                      ← Imágenes locales
 ├── documentacion/
 ├── firestore.rules
@@ -89,8 +90,8 @@ RepoLaraBakery/
 ### Admin (requiere rol `admin`)
 | Ruta | Descripción |
 |---|---|
-| `/admin` | Dashboard mensual con métricas, costos, ventas diarias, estados, pagos, productos y últimos pedidos |
-| `/admin/pedidos` | Lista, búsqueda, filtro y cambio de estado |
+| `/admin` | Dashboard mensual con métricas, costos, ventas diarias, estados/pagos interactivos, productos y últimos pedidos |
+| `/admin/pedidos` | Lista, búsqueda, filtros por estado/pago, orden y cambio de estado |
 | `/admin/pedidos?nuevo=1` | Apertura directa del formulario de pedido manual |
 | `/admin/pedidos/[id]` | Detalle completo, edición de pedido, notas internas y eliminación |
 | `/admin/productos` | CRUD: toggle, edición inline, crear nuevo |
@@ -132,12 +133,25 @@ Métricas principales:
 - Progreso de cobro, margen estimado y avance de entregas.
 - Ventas diarias con gráfica de línea/área SVG.
 - Distribución de pedidos por estado y pagos por estado.
+- Selección interactiva de estado/pago para ver clientes y pedidos dentro del segmento.
+- Enlace "Ver filtro" hacia `/admin/pedidos?estado=...` o `/admin/pedidos?pago=...`.
 - Productos más pedidos por unidades.
 - Productos por ingresos.
 - Costos estimados y cobertura de costos configurados.
 - Últimos pedidos con enlace directo al detalle.
 
-El filtro de periodo usa mes y año en timezone `America/Bogota`.
+El filtro de periodo usa mes y año en timezone `America/Bogota`. La lista operativa de `/admin/pedidos` ordena por `created_at desc` por defecto, con opciones de entrega próxima/lejana.
+
+### Notificaciones por e-mail
+
+`functions/src/index.ts` expone `notifyAdminOnNewOrder`, una Function 2nd Gen que escucha `orders/{orderId}`.
+
+- Lee los items de `orders/{orderId}/items`.
+- Envía e-mail a los admins con cliente, WhatsApp, productos, fecha, entrega y total.
+- Usa secretos `GMAIL_USER` y `GMAIL_PASS`.
+- Registra control de duplicados en `notification_logs/order-{orderId}-admin-email`.
+- Estados del log: `sending`, `sent`, `failed`.
+- Si Gmail rechaza credenciales, el error queda en logs de Functions y en el documento de `notification_logs`.
 
 ---
 
@@ -217,6 +231,20 @@ Contador diario para IDs secuenciales.
 | `other` | number (COP) |
 | `total_cost` | number (calculado) |
 
+### `notification_logs/{logId}`
+Usado por Functions para idempotencia y diagnóstico de notificaciones.
+
+| Campo | Tipo |
+|---|---|
+| `type` | string |
+| `order_id` | string |
+| `status` | `"sending"` \| `"sent"` \| `"failed"` |
+| `attempts` | number |
+| `error` | string? |
+| `created_at` | timestamp |
+| `updated_at` | timestamp |
+| `sent_at` | timestamp? |
+
 ---
 
 ## Roles y admins
@@ -262,9 +290,11 @@ Para agregar un admin: editar ambos archivos y hacer `firebase deploy`.
 - **Sitemap:** `app/sitemap.ts` incluye home, catálogo, pedido y productos de `lib/data.ts`.
 - **Robots:** `app/robots.ts` permite páginas públicas y bloquea `/admin`, `/login` y `/mis-pedidos`.
 - **IDs de pedido:** generados con transacción Firestore en `counters/orders` para garantizar secuencialidad sin colisiones.
+- **Creación de pedido:** `createOrder()` guarda documento padre e items en un solo batch para que las notificaciones lean datos completos.
+- **Anti doble submit:** `OrderForm` usa un bloqueo inmediato en cliente para ignorar clicks repetidos mientras se guarda el pedido.
 - **Timezone:** todos los cálculos de fecha usan `America/Bogota`.
 - **Static export + ruta dinámica admin:** `generateStaticParams` retorna `[{ id: "placeholder" }]` para satisfacer el build. La navegación siempre ocurre via Next.js router desde la lista de pedidos.
 - **Fallback de productos:** `getProducts()` retorna `lib/data.ts` si Firestore está vacío, evitando pantalla en blanco.
 - **Variables de entorno:** baked en el build, no en runtime. Cambiar `.env.local` requiere nuevo deploy.
 - **Domicilio:** tarifa fija de $6.000 COP.
-- **Funciones:** el scaffold de Firebase Functions/Genkit existe para futuras automatizaciones, pero no hay triggers ni endpoints productivos activos.
+- **Funciones:** existe trigger productivo de e-mail para pedidos nuevos. Cualquier cambio de secretos `GMAIL_USER`/`GMAIL_PASS` requiere redeploy de Functions.

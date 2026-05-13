@@ -21,7 +21,7 @@ export default function ProductsPage() {
           </p>
         </div>
         <div className="rounded-lg border border-[#ead8c7] bg-white px-4 py-3 text-sm text-[#74635c]">
-          Minimo 24h de anticipacion
+          Minimo 48h de anticipacion
         </div>
       </div>
       <ProductGrid />

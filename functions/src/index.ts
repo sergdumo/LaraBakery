@@ -2,7 +2,7 @@ import { setGlobalOptions } from "firebase-functions";
 import { onDocumentCreated } from "firebase-functions/v2/firestore";
 import { defineSecret } from "firebase-functions/params";
 import { initializeApp } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
+import { FieldValue, Firestore, getFirestore } from "firebase-admin/firestore";
 import * as nodemailer from "nodemailer";
 import * as logger from "firebase-functions/logger";
 
@@ -13,6 +13,80 @@ const gmailUser = defineSecret("GMAIL_USER");
 const gmailPass = defineSecret("GMAIL_PASS");
 
 const ADMIN_EMAILS = ["saralaracorrea@gmail.com", "serdumo@gmail.com"];
+const SENDING_LOCK_TTL_MS = 10 * 60 * 1000;
+
+function timestampToMillis(value: unknown): number {
+  if (
+    typeof value === "object" &&
+    value !== null &&
+    "toMillis" in value &&
+    typeof (value as { toMillis: () => number }).toMillis === "function"
+  ) {
+    return (value as { toMillis: () => number }).toMillis();
+  }
+
+  return 0;
+}
+
+async function claimNotificationSend(db: Firestore, orderId: string): Promise<boolean> {
+  const logRef = db.collection("notification_logs").doc(`order-${orderId}-admin-email`);
+  const now = Date.now();
+
+  return db.runTransaction(async (transaction) => {
+    const snapshot = await transaction.get(logRef);
+    const existing = snapshot.exists ? snapshot.data() || {} : {};
+    const status = String(existing.status || "");
+    const updatedAt = timestampToMillis(existing.updated_at);
+    const attempts = Number(existing.attempts || 0);
+
+    if (status === "sent") {
+      return false;
+    }
+
+    if (status === "sending" && now - updatedAt < SENDING_LOCK_TTL_MS) {
+      return false;
+    }
+
+    transaction.set(
+      logRef,
+      {
+        type: "admin_new_order_email",
+        order_id: orderId,
+        status: "sending",
+        attempts: attempts + 1,
+        created_at: existing.created_at || FieldValue.serverTimestamp(),
+        updated_at: FieldValue.serverTimestamp()
+      },
+      { merge: true }
+    );
+
+    return true;
+  });
+}
+
+async function markNotificationSent(db: Firestore, orderId: string) {
+  await db.collection("notification_logs").doc(`order-${orderId}-admin-email`).set(
+    {
+      status: "sent",
+      sent_at: FieldValue.serverTimestamp(),
+      updated_at: FieldValue.serverTimestamp()
+    },
+    { merge: true }
+  );
+}
+
+async function markNotificationFailed(db: Firestore, orderId: string, err: unknown) {
+  const message = err instanceof Error ? err.message : String(err);
+
+  await db.collection("notification_logs").doc(`order-${orderId}-admin-email`).set(
+    {
+      status: "failed",
+      error: message,
+      updated_at: FieldValue.serverTimestamp()
+    },
+    { merge: true }
+  );
+}
 
 export const notifyAdminOnNewOrder = onDocumentCreated(
   { document: "orders/{orderId}", secrets: [gmailUser, gmailPass] },
@@ -22,6 +96,13 @@ export const notifyAdminOnNewOrder = onDocumentCreated(
     if (!order) return;
 
     const db = getFirestore();
+    const shouldSend = await claimNotificationSend(db, orderId);
+
+    if (!shouldSend) {
+      logger.info(`Notificación omitida para pedido ${orderId}: ya existe un envío activo o completado.`);
+      return;
+    }
+
     const itemsSnap = await db.collection("orders").doc(orderId).collection("items").get();
     const items = itemsSnap.docs.map((doc) => doc.data());
 
@@ -64,9 +145,12 @@ export const notifyAdminOnNewOrder = onDocumentCreated(
         subject: `Nuevo pedido ${orderId} — ${order.customer_name}`,
         text: body
       });
+      await markNotificationSent(db, orderId);
       logger.info(`Notificación enviada para pedido ${orderId}`);
     } catch (err) {
+      await markNotificationFailed(db, orderId, err);
       logger.error(`Error enviando notificación para pedido ${orderId}`, err);
+      throw err;
     }
   }
 );

@@ -23,9 +23,9 @@ El sitio está **operativo en producción** en https://larabakery.web.app.
 
 - Clientes pueden navegar el catálogo, hacer pedidos y ver su historial.
 - Clientes pueden editar/eliminar pedidos propios mientras sigan pendientes.
-- Lara gestiona pedidos, pedidos manuales, productos, costos y reportes desde el panel admin.
-- Todo conectado a Firebase (Auth + Firestore). UI 100% optimizada para mobile.
-- Hay scaffold de Firebase Functions/Genkit preparado para futuras automatizaciones.
+- Lara gestiona pedidos, pedidos manuales, productos, costos, reportes y dashboard interactivo desde el panel admin.
+- Todo conectado a Firebase (Auth + Firestore + Functions). UI 100% optimizada para mobile.
+- Hay notificaciones automáticas por e-mail cuando entra un pedido.
 
 Lo que falta para considerarlo "terminado": QR Nequi real, detalle de producto desde Firestore, validaciones backend productivas y limpieza de archivos duplicados/sobrantes.
 

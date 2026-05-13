@@ -1,5 +1,7 @@
 {
-  "projects": {},
+  "projects": {
+    "larabakery": "larabakery-d98a0"
+  },
   "targets": {
     "larabakery-d98a0": {
       "hosting": {

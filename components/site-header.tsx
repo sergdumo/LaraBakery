@@ -18,7 +18,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-20 border-b border-[#ead8c7] bg-[#fff9f3]/92 backdrop-blur">
       <div className="bg-[#3b2924] px-4 py-2 text-center text-xs font-semibold uppercase tracking-wide text-[#fff9f3]">
-        Pedidos con mínimo 24 horas de anticipación
+        Pedidos con mínimo 48 horas de anticipación
       </div>
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         <Link href="/" className="focus-ring flex items-center gap-3 rounded-md">

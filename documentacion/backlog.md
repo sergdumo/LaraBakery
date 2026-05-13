@@ -11,7 +11,7 @@
 - ~~**Instagram en el footer**~~ — agregado: https://www.instagram.com/lara.bakeryy/
 
 ### Media prioridad
-- **Validación 24h en formulario al submit** — hoy solo bloquea el input de fecha. Un usuario técnico podría enviarlo igualmente. Agregar validación al momento de guardar en `confirmOrder()`.
+- **Validación 48h en formulario al submit** — hoy solo bloquea el input de fecha. Un usuario técnico podría enviarlo igualmente. Agregar validación al momento de guardar en `confirmOrder()`.
 - **Validación segura de edición/eliminación de pedidos pendientes** — la UI y reglas lo permiten; conviene agregar validación defensiva en una capa backend cuando existan Functions productivas.
 - **Filtros por categoría en catálogo** — útil si el catálogo crece.
 - **Gestión de roles desde UI** — hoy agregar un admin requiere editar código. Podría ser un toggle en el detalle de usuario dentro del admin.
@@ -22,12 +22,18 @@
 - **Búsqueda de productos en catálogo** — útil con catálogo grande.
 - **Reportes por rango de fecha** — filtrar ventas por semana/mes seleccionado.
 - **Mejoras de accesibilidad** — revisar contraste, foco de teclado, atributos ARIA.
-- **Notificación a Lara cuando llega un pedido** — por email o WhatsApp automático (requeriría Firebase Functions).
 - **Limpiar archivos duplicados/sobrantes** — revisar archivos con sufijo ` 2` y reglas temporales antes de entregar o mantener rama principal.
 
 ---
 
 ## Completado
+
+### Sesión 4 — 2026-05-12
+- Notificación automática por e-mail al crear pedidos: Firebase Function `notifyAdminOnNewOrder`, secretos SMTP `GMAIL_USER`/`GMAIL_PASS`, control de duplicados en `notification_logs` y creación de pedido/items en una sola escritura batch.
+- Formulario de pedido: mínimo de anticipación cambiado a 48h en cálculo, UI, textos públicos y documentación.
+- Formulario de pedido: bloqueo inmediato de doble submit para evitar pedidos duplicados por doble click.
+- Admin `/pedidos`: orden por pedidos más nuevos, filtro adicional por estado de pago y opciones de orden por fecha de entrega.
+- Dashboard `/admin`: distribución de estados/pagos convertida en panel interactivo con listado de clientes/pedidos por segmento y enlace directo al filtro equivalente en `/admin/pedidos`.
 
 ### Sesión 3 — 2026-05-09
 - SEO inicial implementado: metadata por rutas públicas, metadata dinámica de productos estáticos, canonicals, OpenGraph, Twitter cards, JSON-LD de negocio local/producto, `sitemap.xml`, `robots.txt` y señales locales de Medellín.
@@ -49,7 +55,7 @@
 - Admin `/pedidos` con búsqueda (ID/nombre/teléfono) y filtro por estado.
 - Admin layout: `AdminGuard` envuelve sidebar + contenido; nav mobile horizontal con scroll.
 - `/mis-pedidos` con `StatusPill` con color para estado de pedido y pago.
-- Formulario de pedido: validación de fecha mínima 24h (timezone Colombia).
+- Formulario de pedido: validación de fecha mínima 48h (timezone Colombia).
 - `SiteFooter` con WhatsApp y copyright.
 - `StatusPill` con colores automáticos por valor (sin necesidad de pasar `tone` manual).
 - `formatStatus()` en `lib/data.ts` para mostrar etiquetas legibles.

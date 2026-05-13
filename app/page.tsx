@@ -8,7 +8,7 @@ import { absoluteUrl, createPageMetadata, siteName, siteUrl } from "@/lib/seo";
 export const metadata: Metadata = createPageMetadata({
   title: "Alfajores artesanales en Medellín | Lara Bakery",
   description:
-    "Alfajores artesanales, tortas y detalles dulces hechos por encargo en Medellín. Pide online con mínimo 24 horas de anticipación.",
+    "Alfajores artesanales, tortas y detalles dulces hechos por encargo en Medellín. Pide online con mínimo 48 horas de anticipación.",
   path: "/"
 });
 
@@ -90,7 +90,7 @@ export default function Home() {
               </Link>
             </div>
             <div className="mt-5 flex flex-wrap gap-x-5 gap-y-1 text-sm text-[#74635c]">
-              <span>24h mínimo</span>
+              <span>48h mínimo</span>
               <span>Recoger o domicilio</span>
               <span>Confirmación por WhatsApp</span>
             </div>

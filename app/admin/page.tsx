@@ -23,6 +23,7 @@ const monthNames = [
 
 const orderStatuses: OrderStatus[] = ["pendiente", "confirmado", "en_preparacion", "listo_para_entrega", "entregado", "cancelado"];
 const paymentStatuses: PaymentStatus[] = ["pendiente", "parcial", "pagado", "cancelado"];
+type InsightSelection = { type: "status"; value: OrderStatus } | { type: "payment"; value: PaymentStatus };
 
 function currentBogotaMonth() {
   const date = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Bogota" }));
@@ -97,6 +98,7 @@ export default function AdminDashboardPage() {
   const currentPeriod = useMemo(() => currentBogotaMonth(), []);
   const [selectedMonth, setSelectedMonth] = useState(currentPeriod.month);
   const [selectedYear, setSelectedYear] = useState(currentPeriod.year);
+  const [selectedInsight, setSelectedInsight] = useState<InsightSelection>({ type: "status", value: "pendiente" });
 
   useEffect(() => {
     async function loadDashboard() {
@@ -216,6 +218,13 @@ export default function AdminDashboardPage() {
   const activePaymentCounts = dashboard.paymentCounts.filter((item) => item.count > 0);
   const statusChartItems = activeStatusCounts.map((item, index) => ({ ...item, color: segmentColor(index) }));
   const paymentChartItems = activePaymentCounts.map((item, index) => ({ ...item, color: segmentColor(index + 2) }));
+  const selectedInsightOrders = dashboard.periodOrders
+    .filter((order) => selectedInsight.type === "status" ? order.status === selectedInsight.value : order.paymentStatus === selectedInsight.value)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  const selectedInsightLabel = selectedInsight.type === "status" ? `Estado: ${formatStatus(selectedInsight.value)}` : `Pago: ${formatStatus(selectedInsight.value)}`;
+  const selectedInsightHref = selectedInsight.type === "status"
+    ? `/admin/pedidos?estado=${selectedInsight.value}`
+    : `/admin/pedidos?pago=${selectedInsight.value}`;
 
   return (
     <section className="grid gap-6">
@@ -338,8 +347,15 @@ export default function AdminDashboardPage() {
         </article>
 
         <article className="rounded-lg border border-[#ead8c7] bg-white p-5 soft-shadow">
-          <p className="text-sm font-semibold uppercase tracking-wide text-[#c9657e]">Estados</p>
-          <h2 className="mt-1 text-xl font-semibold">Pedidos y pagos</h2>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-wide text-[#c9657e]">Estados</p>
+              <h2 className="mt-1 text-xl font-semibold">Pedidos y pagos</h2>
+            </div>
+            <Link href={selectedInsightHref} className="focus-ring rounded-md px-3 py-2 text-sm font-semibold text-[#c9657e] hover:bg-[#fff9f3]">
+              Ver filtro
+            </Link>
+          </div>
           <div className="mt-5 grid gap-5">
             <div>
               <div
@@ -352,13 +368,21 @@ export default function AdminDashboardPage() {
               </div>
               <div className="mt-4 grid gap-2">
                 {statusChartItems.map((item) => (
-                  <div key={item.status} className="flex items-center justify-between gap-3 text-sm">
+                  <button
+                    key={item.status}
+                    type="button"
+                    onClick={() => setSelectedInsight({ type: "status", value: item.status })}
+                    aria-pressed={selectedInsight.type === "status" && selectedInsight.value === item.status}
+                    className={`focus-ring flex items-center justify-between gap-3 rounded-md px-2 py-2 text-left text-sm transition ${
+                      selectedInsight.type === "status" && selectedInsight.value === item.status ? "bg-[#fff9f3]" : "hover:bg-[#fff9f3]"
+                    }`}
+                  >
                     <span className="flex items-center gap-2">
                       <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.color }} />
                       {formatStatus(item.status)}
                     </span>
                     <strong>{item.count}</strong>
-                  </div>
+                  </button>
                 ))}
                 {!statusChartItems.length && <p className="text-sm text-[#74635c]">Sin pedidos en el periodo.</p>}
               </div>
@@ -367,7 +391,15 @@ export default function AdminDashboardPage() {
               <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[#74635c]">Pagos</p>
               <div className="grid gap-2">
                 {paymentChartItems.map((item) => (
-                  <div key={item.status} className="grid grid-cols-[1fr_auto] items-center gap-3 text-sm">
+                  <button
+                    key={item.status}
+                    type="button"
+                    onClick={() => setSelectedInsight({ type: "payment", value: item.status })}
+                    aria-pressed={selectedInsight.type === "payment" && selectedInsight.value === item.status}
+                    className={`focus-ring grid grid-cols-[1fr_auto] items-center gap-3 rounded-md px-2 py-2 text-left text-sm transition ${
+                      selectedInsight.type === "payment" && selectedInsight.value === item.status ? "bg-[#fff9f3]" : "hover:bg-[#fff9f3]"
+                    }`}
+                  >
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.color }} />
@@ -375,8 +407,32 @@ export default function AdminDashboardPage() {
                       </div>
                     </div>
                     <strong>{item.count}</strong>
-                  </div>
+                  </button>
                 ))}
+              </div>
+            </div>
+            <div className="border-t border-[#ead8c7] pt-4">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-[#74635c]">{selectedInsightLabel}</p>
+                <span className="text-xs font-semibold text-[#3b2924]">{selectedInsightOrders.length}</span>
+              </div>
+              <div className="grid max-h-72 gap-2 overflow-auto pr-1">
+                {selectedInsightOrders.slice(0, 8).map((order) => (
+                  <Link key={order.id} href={`/admin/pedidos/${order.id}`} className="focus-ring rounded-md bg-[#fff9f3] p-3 hover:bg-[#f8ecdf]">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold">{order.customerName || order.id}</p>
+                        <p className="mt-1 text-xs text-[#74635c]">{order.id} · {order.requestedDeliveryDate}</p>
+                      </div>
+                      <p className="text-sm font-semibold">{formatCurrency(orderTotal(order))}</p>
+                    </div>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <StatusPill label={formatStatus(order.status)} tone={getStatusTone(order.status)} />
+                      <StatusPill label={formatStatus(order.paymentStatus)} tone={getStatusTone(order.paymentStatus)} />
+                    </div>
+                  </Link>
+                ))}
+                {!selectedInsightOrders.length && <p className="rounded-md bg-[#fff9f3] p-3 text-sm text-[#74635c]">Sin pedidos para este filtro.</p>}
               </div>
             </div>
           </div>

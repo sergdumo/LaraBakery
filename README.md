@@ -15,6 +15,7 @@ Plataforma de pedidos para Lara Bakery. Los clientes navegan el catálogo, hacen
 | Base de datos | Firebase Firestore |
 | Autenticación | Firebase Auth (Google Sign-In) |
 | Hosting | Firebase Hosting |
+| Automatización | Firebase Functions 2nd Gen |
 
 El sitio es 100% estático — Next.js genera HTML/JS en el build y Firebase lo sirve. Toda la lógica de datos es client-side con Firestore SDK.
 
@@ -60,6 +61,19 @@ firebase deploy --only hosting
 
 El script de predeploy corre `npm run build` automáticamente (configurado en `firebase.json`).
 
+### Deploy de Functions
+
+Las notificaciones automáticas por e-mail viven en Firebase Functions y se despliegan aparte:
+
+```bash
+cd functions
+firebase functions:secrets:set GMAIL_USER
+firebase functions:secrets:set GMAIL_PASS
+firebase deploy --only functions
+```
+
+`GMAIL_USER` debe ser la cuenta remitente y `GMAIL_PASS` debe ser una contraseña de aplicación o credencial SMTP válida para esa cuenta. La Function `notifyAdminOnNewOrder` envía correo a los admins cuando se crea un pedido en Firestore.
+
 ---
 
 ## Estructura de rutas
@@ -71,8 +85,8 @@ El script de predeploy corre `npm run build` automáticamente (configurado en `f
 /pedido              → Formulario de pedido (requiere login)
 /mis-pedidos         → Historial del cliente (requiere login)
 /login               → Login con Google
-/admin               → Dashboard admin
-/admin/pedidos       → Lista y gestión de pedidos
+/admin               → Dashboard admin interactivo
+/admin/pedidos       → Lista, filtros y gestión de pedidos
 /admin/pedidos/[id]  → Detalle de pedido con notas internas
 /admin/productos     → CRUD de productos
 /admin/costos        → Costos y márgenes por producto
@@ -208,15 +222,16 @@ Para agregar un admin nuevo, editar ambos archivos y hacer deploy.
 1. Cliente navega el catálogo → /productos
 2. Selecciona producto → /pedido?producto=ID
 3. Completa el formulario (nombre, teléfono, fecha, método de entrega)
-   └─ Fecha mínima: mañana (validación 24h en timezone Colombia)
+   └─ Fecha mínima: 48 horas (timezone Colombia)
 4. Hace login con Google si no está autenticado
 5. Confirma el pedido → se guarda en Firestore con estado "pendiente"
 6. Ve pantalla de confirmación con:
    └─ Número de pedido (LB-YYMMDD-NN)
    └─ Datos Nequi para pagar
    └─ Botón para enviar comprobante por WhatsApp
-7. Lara recibe el pedido en /admin/pedidos
-8. Lara cambia el estado y confirma pago desde el detalle del pedido
+7. Lara recibe notificación automática por e-mail
+8. Lara revisa el pedido en /admin/pedidos
+9. Lara cambia el estado y confirma pago desde la lista o el detalle del pedido
 ```
 
 ---
@@ -234,6 +249,8 @@ El archivo `/public/images/nequi-qr.svg` es un placeholder. Para reemplazarlo co
 ## Notas técnicas
 
 - **Static export + rutas dinámicas:** `/admin/pedidos/[id]` requiere `generateStaticParams`. Retorna `[{ id: "placeholder" }]` para satisfacer el build. La navegación real siempre ocurre via el router de Next.js (client-side) desde la lista de pedidos.
-- **Timezone:** Todos los cálculos de fecha (IDs de pedido, mínimo 24h) usan `America/Bogota`.
+- **Timezone:** Todos los cálculos de fecha (IDs de pedido, mínimo 48h) usan `America/Bogota`.
 - **Variables de entorno:** Son baked en el build (no runtime). Cambiar `.env.local` requiere nuevo `firebase deploy`.
 - **Fallback de productos:** Si Firestore no tiene productos, `getProducts()` retorna los datos de `lib/data.ts`. Esto evita pantalla vacía en desarrollo.
+- **Notificaciones:** `notifyAdminOnNewOrder` envía e-mail a los admins cuando se crea un pedido y registra idempotencia en `notification_logs`.
+- **Anti doble click:** El formulario de pedido bloquea submits repetidos en cliente mientras Firestore guarda el pedido.

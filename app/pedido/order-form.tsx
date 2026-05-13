@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { Product, formatCurrency } from "@/lib/data";
 import { darkActionStyle } from "@/lib/styles";
@@ -35,6 +35,7 @@ export function OrderForm({
   const [confirmedDelivery, setConfirmedDelivery] = useState<{ method: string; date: string }>({ method: "", date: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const submittingRef = useRef(false);
   const { user, loading, signInWithGoogle } = useAuth();
 
   useEffect(() => {
@@ -65,7 +66,7 @@ export function OrderForm({
 
   const minDate = useMemo(() => {
     const nowCO = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Bogota" }));
-    nowCO.setDate(nowCO.getDate() + 1);
+    nowCO.setDate(nowCO.getDate() + 2);
     const yy = nowCO.getFullYear();
     const mm = String(nowCO.getMonth() + 1).padStart(2, "0");
     const dd = String(nowCO.getDate()).padStart(2, "0");
@@ -102,12 +103,18 @@ export function OrderForm({
   }
 
   async function confirmOrder(formData: FormData) {
-    setError("");
-
     if (!user) {
       setError("Inicia sesion con Google para guardar tu pedido.");
       return;
     }
+
+    if (submittingRef.current) {
+      return;
+    }
+
+    submittingRef.current = true;
+    setIsSubmitting(true);
+    setError("");
 
     const orderItems = items.map((item) => {
       const product = products.find((entry) => entry.id === item.productId);
@@ -122,7 +129,6 @@ export function OrderForm({
     });
 
     try {
-      setIsSubmitting(true);
       const orderId = await createOrder({
         user,
         customerName: String(formData.get("customerName") || ""),
@@ -146,6 +152,7 @@ export function OrderForm({
         date: String(formData.get("requestedDeliveryDate") || "")
       });
     } catch (currentError) {
+      submittingRef.current = false;
       setError(currentError instanceof Error ? currentError.message : "No se pudo guardar el pedido.");
     } finally {
       setIsSubmitting(false);
@@ -341,7 +348,7 @@ export function OrderForm({
               required
               className="focus-ring rounded-md border border-[#ead8c7] bg-[#fff9f3] px-3 py-2 font-normal"
             />
-            <span className="text-xs font-normal text-[#74635c]">Mínimo 24 h de anticipación</span>
+            <span className="text-xs font-normal text-[#74635c]">Mínimo 48 h de anticipación</span>
           </label>
           <fieldset className="grid gap-2">
             <legend className="text-sm font-semibold">Método de entrega</legend>
@@ -393,8 +400,9 @@ export function OrderForm({
             disabled={!user || isSubmitting}
             className="focus-ring dark-action mt-5 w-full rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60"
             style={darkActionStyle}
+            aria-busy={isSubmitting}
           >
-            {isSubmitting ? "Guardando..." : "Confirmar pedido"}
+            {isSubmitting ? "Registrando pedido..." : "Confirmar pedido"}
           </button>
         </div>
       </aside>
@@ -419,10 +427,11 @@ export function OrderForm({
             <button
               type="submit"
               disabled={!user || isSubmitting}
-              className="focus-ring dark-action rounded-full px-5 py-2.5 text-sm font-semibold disabled:opacity-60"
+              className="focus-ring dark-action min-w-[154px] rounded-full px-5 py-2.5 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60"
               style={darkActionStyle}
+              aria-busy={isSubmitting}
             >
-              {isSubmitting ? "Guardando..." : "Confirmar pedido"}
+              {isSubmitting ? "Registrando..." : "Confirmar pedido"}
             </button>
           )}
         </div>

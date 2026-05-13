@@ -10,6 +10,13 @@ import { createManualOrder, deleteOrder, getAllOrders, getProducts, updateOrderS
 
 const orderStatuses: OrderStatus[] = ["pendiente", "confirmado", "en_preparacion", "listo_para_entrega", "entregado", "cancelado"];
 const paymentStatuses: PaymentStatus[] = ["pendiente", "pagado", "parcial", "cancelado"];
+const sortOptions = [
+  { value: "created_desc", label: "Más nuevos" },
+  { value: "delivery_asc", label: "Entrega próxima" },
+  { value: "delivery_desc", label: "Entrega lejana" }
+] as const;
+
+type SortOption = (typeof sortOptions)[number]["value"];
 
 type ManualItem = {
   productId: string;
@@ -20,6 +27,11 @@ type ManualItem = {
 
 function selectedVariant(product?: Product, variantId?: string) {
   return product?.variants?.find((variant) => variant.id === variantId) || product?.variants?.[0];
+}
+
+function dateValue(value: string) {
+  const timestamp = new Date(value).getTime();
+  return Number.isNaN(timestamp) ? 0 : timestamp;
 }
 
 export default function AdminOrdersPage() {
@@ -37,6 +49,8 @@ export default function AdminOrdersPage() {
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<OrderStatus | "">("");
+  const [paymentFilter, setPaymentFilter] = useState<PaymentStatus | "">("");
+  const [sortBy, setSortBy] = useState<SortOption>("created_desc");
 
   async function loadOrders() {
     setLoading(true);
@@ -58,6 +72,14 @@ export default function AdminOrdersPage() {
   useEffect(() => {
     if (searchParams.get("nuevo") === "1") {
       setShowManualForm(true);
+    }
+    const status = searchParams.get("estado");
+    const payment = searchParams.get("pago");
+    if (status && orderStatuses.includes(status as OrderStatus)) {
+      setStatusFilter(status as OrderStatus);
+    }
+    if (payment && paymentStatuses.includes(payment as PaymentStatus)) {
+      setPaymentFilter(payment as PaymentStatus);
     }
   }, [searchParams]);
 
@@ -169,12 +191,25 @@ export default function AdminOrdersPage() {
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    return orders.filter((o) => {
+    const nextOrders = orders.filter((o) => {
       const matchesSearch = !q || o.id.toLowerCase().includes(q) || o.customerName.toLowerCase().includes(q) || o.customerPhone.includes(q);
       const matchesStatus = !statusFilter || o.status === statusFilter;
-      return matchesSearch && matchesStatus;
+      const matchesPayment = !paymentFilter || o.paymentStatus === paymentFilter;
+      return matchesSearch && matchesStatus && matchesPayment;
     });
-  }, [orders, search, statusFilter]);
+
+    return [...nextOrders].sort((a, b) => {
+      if (sortBy === "delivery_asc") {
+        return dateValue(a.requestedDeliveryDate) - dateValue(b.requestedDeliveryDate);
+      }
+
+      if (sortBy === "delivery_desc") {
+        return dateValue(b.requestedDeliveryDate) - dateValue(a.requestedDeliveryDate);
+      }
+
+      return dateValue(b.createdAt) - dateValue(a.createdAt);
+    });
+  }, [orders, search, statusFilter, paymentFilter, sortBy]);
 
   return (
     <section>
@@ -334,6 +369,25 @@ export default function AdminOrdersPage() {
             <option key={s} value={s}>{formatStatus(s)}</option>
           ))}
         </select>
+        <select
+          value={paymentFilter}
+          onChange={(e) => setPaymentFilter(e.target.value as PaymentStatus | "")}
+          className="focus-ring rounded-md border border-[#ead8c7] bg-white px-3 py-2 text-sm"
+        >
+          <option value="">Todos los pagos</option>
+          {paymentStatuses.map((s) => (
+            <option key={s} value={s}>{formatStatus(s)}</option>
+          ))}
+        </select>
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as SortOption)}
+          className="focus-ring rounded-md border border-[#ead8c7] bg-white px-3 py-2 text-sm"
+        >
+          {sortOptions.map((option) => (
+            <option key={option.value} value={option.value}>{option.label}</option>
+          ))}
+        </select>
       </div>
 
       {loading && <p className="mb-4 rounded-lg border border-[#ead8c7] bg-white p-4 text-sm text-[#74635c]">Cargando pedidos...</p>}
@@ -347,6 +401,7 @@ export default function AdminOrdersPage() {
                   {order.id}
                 </Link>
                 <p className="mt-1 text-sm text-[#74635c]">{order.customerName} · {order.customerPhone}</p>
+                <p className="mt-1 text-xs text-[#8a756d]">Creado: {order.createdAt ? new Date(order.createdAt).toLocaleString("es-CO") : "Sin fecha"}</p>
                 <p className="mt-1 text-sm text-[#74635c]">Entrega: {order.requestedDeliveryDate} / {order.deliveryMethod}</p>
               </div>
               <div className="text-left xl:text-right">
