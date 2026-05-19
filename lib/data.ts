@@ -77,7 +77,27 @@ export const products: Product[] = [
     category: "Tortas",
     presentation: "1/4 lb / 1/2 lb / 1 lb",
     ingredients: ["Zanahoria", "Harina", "Huevos", "Canela", "Nueces"],
-    imageUrl: "/images/torta_zanahoria.jpeg",
+    imageUrl: "/images/torta_zanahoria.PNG",
+    isAvailable: true,
+    isFeatured: true,
+    prepHours: 48,
+    variants: [
+      { id: "cuarto-libra", name: "Cuarto de libra", price: 43000 },
+      { id: "media-libra", name: "Media libra", price: 53000 },
+      { id: "una-libra", name: "Una libra", price: 63000 }
+    ]
+  },
+  {
+    id: "torta-maria-luisa",
+    name: "Torta Maria Luisa",
+    description: "Torta Maria Luisa artesanal en tres tamaños.",
+    longDescription:
+      "Torta Maria Luisa artesanal disponible por encargo en cuarto de libra, media libra y una libra.",
+    price: 43000,
+    category: "Tortas",
+    presentation: "1/4 lb / 1/2 lb / 1 lb",
+    ingredients: [],
+    imageUrl: "/images/maria_luisa.PNG",
     isAvailable: true,
     isFeatured: true,
     prepHours: 48,
