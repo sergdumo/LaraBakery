@@ -8,6 +8,7 @@ Esta carpeta acompaña el desarrollo del sitio web de Lara Bakery. La idea es ma
 
 | Archivo | Contenido |
 |---|---|
+| [proyecto.md](./proyecto.md) | Documento maestro del proyecto: propósito, contexto, arquitectura, riesgos y acciones |
 | [estado-mvp.md](./estado-mvp.md) | Qué está funcionando, qué falta y riesgos actuales |
 | [arquitectura.md](./arquitectura.md) | Stack, rutas, componentes, Firestore y decisiones técnicas |
 | [backlog.md](./backlog.md) | Pendientes priorizados y registro de lo completado |
@@ -35,6 +36,7 @@ Lo que falta para considerarlo "terminado": QR Nequi real, detalle de producto d
 
 Cada cambio relevante debe actualizar al menos uno de estos documentos:
 
+- Estado general, riesgos o decisiones transversales → `proyecto.md`
 - Nuevas páginas, componentes, colecciones o reglas → `arquitectura.md`
 - Funcionalidad terminada o descartada → `estado-mvp.md` y `backlog.md`
 - Decisiones importantes o sesiones de trabajo → `bitacora.md`

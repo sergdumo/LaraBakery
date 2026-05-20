@@ -20,7 +20,7 @@ El sitio genera HTML/JS estático en el build y Firebase lo sirve sin servidor. 
 ## Estructura de archivos
 
 ```
-RepoLaraBakery/
+Web/
 ├── app/
 │   ├── page.tsx                        ← Home
 │   ├── layout.tsx                      ← Layout global (header, footer, nav, WhatsApp)
