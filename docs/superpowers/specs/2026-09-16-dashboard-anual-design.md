@@ -12,6 +12,7 @@ Agregar una lectura anual al dashboard administrativo sin perder la vista mensua
 - El grafico principal combinara barras de ventas mensuales con una linea de ganancia estimada. Cada mes sera seleccionable para abrir su detalle mensual.
 - Una curva acumulada mostrara el avance real del ano. No se dibujara una meta ficticia.
 - El ranking anual mostrara hasta cinco productos por facturacion, con unidades y margen estimado.
+- Un segundo ranking mostrara los cinco clientes con mayor valor comprado, junto con pedidos y ticket promedio.
 - Un mapa de calor mostrara actividad diaria por mes y dia de la semana para revelar concentraciones de demanda.
 
 ## Reglas de negocio
@@ -22,6 +23,9 @@ Agregar una lectura anual al dashboard administrativo sin perder la vista mensua
 - La cobertura de costos debe mostrarse para no presentar una ganancia incompleta como definitiva.
 - Los meses sin actividad aparecen con valor cero.
 - La comparacion interanual se oculta cuando no existe un ano anterior con pedidos.
+- Los clientes se consolidan por nombre normalizado: sin diferencias por mayusculas, tildes, signos o espacios repetidos.
+- Los pedidos cancelados no aportan al ranking de clientes y los pedidos sin nombre se excluyen para evitar fusiones falsas.
+- El ranking de clientes no muestra telefono ni correo.
 
 ## Arquitectura
 

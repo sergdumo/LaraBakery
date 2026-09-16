@@ -105,6 +105,40 @@ Expected: todos los tests pasan, lint termina sin errores y Next.js exporta el s
 
 Abrir `/admin` localmente, validar 390 px y escritorio, comprobar estados vacios, interaccion por mes y ausencia de overflow.
 
+### Task 4: Top de clientes por valor comprado
+
+**Files:**
+- Modify: `lib/dashboard-analytics.ts`
+- Modify: `components/annual-dashboard.tsx`
+- Modify: `tests/dashboard-analytics.test.mjs`
+- Modify: `tests/annual-dashboard-structure.test.mjs`
+
+**Interfaces:**
+- Consumes: `customerName` de cada pedido activo del ano.
+- Produces: `AnnualCustomerSummary[]` ordenado por `revenue` descendente dentro de `AnnualDashboardData.customers`.
+
+- [ ] **Step 1: Escribir pruebas fallidas de identidad y ranking**
+
+Probar que `Maria Gomez`, `MARÍA GÓMEZ` y espacios repetidos se consolidan; que cancelados y nombres vacios se excluyen; y que el resultado incluye ventas, pedidos y ticket promedio.
+
+- [ ] **Step 2: Confirmar el fallo correcto**
+
+Run: `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test tests/dashboard-analytics.test.mjs`
+Expected: FAIL porque `AnnualDashboardData` aun no produce `customers`.
+
+- [ ] **Step 3: Implementar agregacion por nombre normalizado**
+
+Agregar `AnnualCustomerSummary`, normalizar con Unicode NFD, quitar diacriticos y signos, acumular solo pedidos no cancelados y ordenar por facturacion.
+
+- [ ] **Step 4: Integrar la tarjeta visual**
+
+Mostrar hasta cinco clientes junto al ranking de productos, con nombre, facturacion, numero de pedidos y ticket promedio, sin datos de contacto.
+
+- [ ] **Step 5: Validar y revisar visualmente**
+
+Run: `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test tests/*.test.mjs && npm run lint && npm run build`
+Expected: todas las pruebas pasan, lint termina sin errores y el export estatico se genera correctamente.
+
 ## Self-review
 
 - El plan cubre todos los requisitos de la especificacion.
