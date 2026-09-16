@@ -185,9 +185,11 @@ export function AnnualDashboard({ data, previousData, onSelectMonth }: AnnualDas
   const bestMonth = data.months.reduce((best, month) => month.revenue > best.revenue ? month : best, data.months[0]);
   const topProducts = data.products.slice(0, 5);
   const maxProductRevenue = Math.max(...topProducts.map((product) => product.revenue), 1);
+  const topCustomers = data.customers.slice(0, 5);
+  const maxCustomerRevenue = Math.max(...topCustomers.map((customer) => customer.revenue), 1);
 
   return (
-    <div className="grid gap-5">
+    <div className="grid min-w-0 grid-cols-1 gap-5">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {[
           { eyebrow: "Ventas del año", value: formatCurrency(data.revenue), detail: `${Math.round(data.revenue ? (data.paidRevenue / data.revenue) * 100 : 0)}% cobrado`, change: revenueChange },
@@ -254,7 +256,7 @@ export function AnnualDashboard({ data, previousData, onSelectMonth }: AnnualDas
         </article>
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[0.8fr_1.2fr]">
+      <div className="grid gap-5 xl:grid-cols-2">
         <article className="rounded-2xl border border-[#ead8c7] bg-white p-5 soft-shadow">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#a35166]">Portafolio</p>
           <h2 className="mt-2 text-xl font-semibold">Productos que más facturan</h2>
@@ -273,14 +275,38 @@ export function AnnualDashboard({ data, previousData, onSelectMonth }: AnnualDas
         </article>
 
         <article className="rounded-2xl border border-[#ead8c7] bg-white p-5 soft-shadow">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div><p className="text-xs font-bold uppercase tracking-[0.18em] text-[#a35166]">Ritmo diario</p><h2 className="mt-2 text-xl font-semibold">Mapa anual de actividad</h2></div>
-            <div className="flex items-center gap-2 text-[10px] text-[#74635c]"><span>Menos</span>{[0.12, 0.32, 0.55, 0.78, 1].map((opacity) => <i key={opacity} className="h-3 w-3 rounded-[3px]" style={{ backgroundColor: `rgba(201,101,126,${opacity})` }} />)}<span>Más</span></div>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#3f7650]">Comunidad</p>
+          <h2 className="mt-2 text-xl font-semibold">Clientes que más compran</h2>
+          <p className="mt-1 text-sm text-[#74635c]">Top anual por valor comprado.</p>
+          <div className="mt-5 grid gap-4">
+            {topCustomers.map((customer, index) => (
+              <div key={customer.id}>
+                <div className="flex items-end justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full text-xs font-bold ${index === 0 ? "bg-[#3f7650] text-white" : "bg-[#e7f3e9] text-[#356844]"}`}>{index + 1}</span>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold">{customer.name}</p>
+                      <p className="mt-1 text-xs text-[#74635c]">{customer.orders} {customer.orders === 1 ? "pedido" : "pedidos"} · {formatCurrency(customer.averageTicket)} ticket promedio</p>
+                    </div>
+                  </div>
+                  <p className="shrink-0 text-sm font-bold">{formatCurrency(customer.revenue)}</p>
+                </div>
+                <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#e7efe8]"><div className="h-full rounded-full bg-[linear-gradient(90deg,#3f7650,#8fb79a)]" style={{ width: `${(customer.revenue / maxCustomerRevenue) * 100}%` }} /></div>
+              </div>
+            ))}
+            {!topCustomers.length && <p className="rounded-xl bg-[#fff9f3] p-5 text-sm text-[#74635c]">Aún no hay clientes con compras activas en este año.</p>}
           </div>
-          <p className="mt-2 text-sm text-[#74635c]">Cada cuadro representa un día; la intensidad refleja sus ventas.</p>
-          <ActivityHeatmap data={data} />
         </article>
       </div>
+
+      <article className="rounded-2xl border border-[#ead8c7] bg-white p-5 soft-shadow">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div><p className="text-xs font-bold uppercase tracking-[0.18em] text-[#a35166]">Ritmo diario</p><h2 className="mt-2 text-xl font-semibold">Mapa anual de actividad</h2></div>
+          <div className="flex items-center gap-2 text-[10px] text-[#74635c]"><span>Menos</span>{[0.12, 0.32, 0.55, 0.78, 1].map((opacity) => <i key={opacity} className="h-3 w-3 rounded-[3px]" style={{ backgroundColor: `rgba(201,101,126,${opacity})` }} />)}<span>Más</span></div>
+        </div>
+        <p className="mt-2 text-sm text-[#74635c]">Cada cuadro representa un día; la intensidad refleja sus ventas.</p>
+        <ActivityHeatmap data={data} />
+      </article>
     </div>
   );
 }

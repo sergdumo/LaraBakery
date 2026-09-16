@@ -1,4 +1,5 @@
 export type DashboardOrder = {
+  customerName: string;
   requestedDeliveryDate: string;
   status: string;
   paymentStatus: string;
@@ -49,6 +50,14 @@ export type AnnualActivityDay = {
   revenue: number;
 };
 
+export type AnnualCustomerSummary = {
+  id: string;
+  name: string;
+  orders: number;
+  revenue: number;
+  averageTicket: number;
+};
+
 export type AnnualDashboardData = {
   year: number;
   revenue: number;
@@ -63,6 +72,7 @@ export type AnnualDashboardData = {
   costCoverage: number;
   months: AnnualMonthSummary[];
   products: AnnualProductSummary[];
+  customers: AnnualCustomerSummary[];
   activity: AnnualActivityDay[];
 };
 
@@ -86,6 +96,15 @@ function periodFromDate(date: string) {
   return { year, month, day };
 }
 
+function normalizeCustomerName(name: string) {
+  return name
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("es-CO")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
 export function buildAnnualDashboard(
   orders: DashboardOrder[],
   productCosts: DashboardProductCost[],
@@ -103,6 +122,7 @@ export function buildAnnualDashboard(
     cumulativeRevenue: 0
   }));
   const products = new Map<string, AnnualProductSummary>();
+  const customers = new Map<string, AnnualCustomerSummary>();
   const activity = new Map<string, AnnualActivityDay>();
   let unitsWithRegisteredCost = 0;
 
@@ -126,6 +146,21 @@ export function buildAnnualDashboard(
     activityDay.orders += 1;
     activityDay.revenue += orderRevenue;
     activity.set(order.requestedDeliveryDate, activityDay);
+
+    const customerId = normalizeCustomerName(order.customerName || "");
+    if (customerId) {
+      const customer = customers.get(customerId) || {
+        id: customerId,
+        name: order.customerName.trim().replace(/\s+/g, " "),
+        orders: 0,
+        revenue: 0,
+        averageTicket: 0
+      };
+      customer.orders += 1;
+      customer.revenue += orderRevenue;
+      customer.averageTicket = customer.revenue / customer.orders;
+      customers.set(customerId, customer);
+    }
 
     order.items.forEach((item) => {
       const baseProductId = item.productId.split(":")[0];
@@ -191,6 +226,7 @@ export function buildAnnualDashboard(
     costCoverage: totalUnits ? Math.round((unitsWithRegisteredCost / totalUnits) * 100) : 0,
     months,
     products: Array.from(products.values()).sort((a, b) => b.revenue - a.revenue),
+    customers: Array.from(customers.values()).sort((a, b) => b.revenue - a.revenue || a.name.localeCompare(b.name, "es")),
     activity: Array.from(activity.values()).sort((a, b) => a.date.localeCompare(b.date))
   };
 }

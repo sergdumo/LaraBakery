@@ -157,3 +157,32 @@ test("mantiene variantes separadas y usa el costo del producto base", () => {
     { id: "torta:pequena", name: "Torta - Pequeña", estimatedCost: 18_000 }
   ]);
 });
+
+test("consolida clientes por nombre normalizado y los ordena por valor comprado", () => {
+  const result = buildAnnualDashboard(
+    [
+      order({ customerName: "María Gómez" }),
+      order({
+        id: "LB-260201-01",
+        customerName: "  MARIA   GOMEZ ",
+        requestedDeliveryDate: "2026-02-10",
+        items: [{ productId: "torta", productName: "Torta", quantity: 1, unitPrice: 50_000 }]
+      }),
+      order({
+        id: "LB-260301-01",
+        customerName: "Juan Pérez",
+        requestedDeliveryDate: "2026-03-10",
+        items: [{ productId: "alfajor", productName: "Alfajor", quantity: 1, unitPrice: 10_000 }]
+      }),
+      order({ customerName: "María Gómez", status: "cancelado", items: [{ productId: "torta", productName: "Torta", quantity: 1, unitPrice: 500_000 }] }),
+      order({ customerName: "   ", items: [{ productId: "torta", productName: "Torta", quantity: 1, unitPrice: 300_000 }] })
+    ],
+    costs,
+    2026
+  );
+
+  assert.deepEqual(result.customers, [
+    { id: "maria gomez", name: "María Gómez", orders: 2, revenue: 70_000, averageTicket: 35_000 },
+    { id: "juan perez", name: "Juan Pérez", orders: 1, revenue: 10_000, averageTicket: 10_000 }
+  ]);
+});
