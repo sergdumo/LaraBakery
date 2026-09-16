@@ -397,7 +397,7 @@ export default function AdminOrdersPage() {
           <article key={order.id} className="rounded-lg border border-[#ead8c7] bg-white p-5 soft-shadow">
             <div className="flex flex-col justify-between gap-3 xl:flex-row">
               <div>
-                <Link href={`/admin/pedidos/${order.id}`} className="font-semibold hover:text-[#c9657e] hover:underline">
+                <Link href={`/admin/pedidos/detalle?id=${encodeURIComponent(order.id)}`} className="font-semibold hover:text-[#c9657e] hover:underline">
                   {order.id}
                 </Link>
                 <p className="mt-1 text-sm text-[#74635c]">{order.customerName} · {order.customerPhone}</p>
@@ -443,7 +443,7 @@ export default function AdminOrdersPage() {
                 </select>
               </label>
               <Link
-                href={`/admin/pedidos/${order.id}`}
+                href={`/admin/pedidos/detalle?id=${encodeURIComponent(order.id)}`}
                 className="focus-ring self-end rounded-md border border-[#ead8c7] px-3 py-2 text-sm font-semibold text-[#74635c] hover:bg-[#fff9f3]"
               >
                 Ver / editar

@@ -418,7 +418,7 @@ export default function AdminDashboardPage() {
               </div>
               <div className="grid max-h-72 gap-2 overflow-auto pr-1">
                 {selectedInsightOrders.slice(0, 8).map((order) => (
-                  <Link key={order.id} href={`/admin/pedidos/${order.id}`} className="focus-ring rounded-md bg-[#fff9f3] p-3 hover:bg-[#f8ecdf]">
+                  <Link key={order.id} href={`/admin/pedidos/detalle?id=${encodeURIComponent(order.id)}`} className="focus-ring rounded-md bg-[#fff9f3] p-3 hover:bg-[#f8ecdf]">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="truncate text-sm font-semibold">{order.customerName || order.id}</p>
@@ -533,7 +533,7 @@ export default function AdminDashboardPage() {
           </div>
           <div className="mt-5 grid gap-3">
             {dashboard.periodOrders.slice(0, 5).map((order) => (
-              <Link key={order.id} href={`/admin/pedidos/${order.id}`} className="focus-ring flex items-center justify-between gap-4 rounded-md bg-[#fff9f3] p-3 hover:bg-[#f8ecdf]">
+              <Link key={order.id} href={`/admin/pedidos/detalle?id=${encodeURIComponent(order.id)}`} className="focus-ring flex items-center justify-between gap-4 rounded-md bg-[#fff9f3] p-3 hover:bg-[#f8ecdf]">
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold">{order.customerName || order.id}</p>
                   <p className="mt-1 text-xs text-[#74635c]">{order.id} · {order.requestedDeliveryDate}</p>

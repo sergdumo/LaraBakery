@@ -357,6 +357,7 @@ function toOrder(id: string, data: Record<string, unknown>, items: Awaited<Retur
     requestedDeliveryDate: String(data.requested_delivery_date || ""),
     deliveryMethod: data.delivery_method === "domicilio" ? "domicilio" : "recoger",
     deliveryAddress: String(data.delivery_address || ""),
+    deliveryFee: Number(data.delivery_fee || 0),
     status: String(data.status || "pendiente") as OrderStatus,
     paymentStatus: String(data.payment_status || "pendiente") as PaymentStatus,
     customerNotes: String(data.customer_notes || ""),

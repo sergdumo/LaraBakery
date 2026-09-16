@@ -38,6 +38,7 @@ export type Order = {
   requestedDeliveryDate: string;
   deliveryMethod: "recoger" | "domicilio";
   deliveryAddress?: string;
+  deliveryFee?: number;
   status: OrderStatus;
   paymentStatus: PaymentStatus;
   customerNotes: string;

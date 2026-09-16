@@ -22,13 +22,21 @@ export function AdminOrderDetail({ id }: { id: string }) {
   const [notesSaved, setNotesSaved] = useState(false);
   const [savingState, setSavingState] = useState(false);
   const [error, setError] = useState("");
+  const [detailsSaved, setDetailsSaved] = useState(false);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
+    let active = true;
     getOrderById(id).then((result) => {
+      if (!active) return;
       setOrder(result);
       setInternalNotes(result?.internalNotes || "");
-      setLoading(false);
+    }).catch(() => {
+      if (active) setLoadError(true);
+    }).finally(() => {
+      if (active) setLoading(false);
     });
+    return () => { active = false; };
   }, [id]);
 
   async function saveNotes() {
@@ -53,13 +61,14 @@ export function AdminOrderDetail({ id }: { id: string }) {
 
     setError("");
     setSavingDetails(true);
+    setDetailsSaved(false);
     const deliveryMethod: "recoger" | "domicilio" = String(formData.get("deliveryMethod")) === "domicilio" ? "domicilio" : "recoger";
     const items = order.items.map((item, index) => ({
       productId: item.productId,
       productName: String(formData.get(`item-${index}-name`) || item.productName),
       quantity: Math.max(1, Number(formData.get(`item-${index}-quantity`) || item.quantity)),
       unitPrice: Math.max(0, Number(formData.get(`item-${index}-unitPrice`) || item.unitPrice)),
-      notes: String(formData.get(`item-${index}-notes`) || item.notes || "")
+      notes: String(formData.get(`item-${index}-notes`) ?? "")
     }));
     const nextOrder: Order = {
       ...order,
@@ -68,6 +77,7 @@ export function AdminOrderDetail({ id }: { id: string }) {
       customerPhone: String(formData.get("customerPhone") || ""),
       requestedDeliveryDate: String(formData.get("requestedDeliveryDate") || ""),
       deliveryMethod,
+      deliveryFee: deliveryMethod === "domicilio" ? (order.deliveryMethod === "domicilio" ? order.deliveryFee ?? 6000 : 6000) : 0,
       deliveryAddress: String(formData.get("deliveryAddress") || ""),
       customerNotes: String(formData.get("customerNotes") || ""),
       items
@@ -77,9 +87,10 @@ export function AdminOrderDetail({ id }: { id: string }) {
       await updateOrderDetails(order.id, {
         ...nextOrder,
         items,
-        deliveryFee: deliveryMethod === "domicilio" ? 6000 : 0
+        deliveryFee: nextOrder.deliveryFee ?? 0
       });
       setOrder(nextOrder);
+      setDetailsSaved(true);
       setEditingDetails(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "No pudimos actualizar el pedido.");
@@ -106,6 +117,10 @@ export function AdminOrderDetail({ id }: { id: string }) {
 
   if (loading) {
     return <p className="text-sm text-[#74635c]">Cargando pedido...</p>;
+  }
+
+  if (loadError) {
+    return <section role="alert"><p>No pudimos cargar el pedido. Revisa tu conexión y vuelve a intentarlo.</p><Link href="/admin/pedidos">Volver a pedidos</Link></section>;
   }
 
   if (!order) {
@@ -142,6 +157,8 @@ export function AdminOrderDetail({ id }: { id: string }) {
       </div>
 
       {error && <p className="rounded-lg bg-[#ffd3bc] p-4 text-sm text-[#3b2924]">{error}</p>}
+
+      {detailsSaved && <p role="status" className="rounded-lg bg-green-50 p-4 text-sm text-green-800">Pedido actualizado correctamente.</p>}
 
       {editingDetails && (
         <form action={saveDetails} className="rounded-lg border border-[#ead8c7] bg-white p-5 soft-shadow">
@@ -220,8 +237,12 @@ export function AdminOrderDetail({ id }: { id: string }) {
             ))}
           </div>
           <div className="mt-4 flex items-center justify-between border-t border-[#ead8c7] pt-4">
-            <span className="text-sm text-[#74635c]">Total</span>
-            <strong className="text-xl">{formatCurrency(orderTotal(order))}</strong>
+            <div className="text-sm text-[#74635c]">
+              <p>Productos: {formatCurrency(orderTotal(order))}</p>
+              <p>Domicilio: {formatCurrency(order.deliveryFee ?? 0)}</p>
+              <p>Total</p>
+            </div>
+            <strong className="text-xl">{formatCurrency(orderTotal(order) + (order.deliveryFee ?? 0))}</strong>
           </div>
         </article>
 
