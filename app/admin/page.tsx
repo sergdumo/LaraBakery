@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { AnnualDashboard } from "@/components/annual-dashboard";
 import { StatusPill } from "@/components/status-pill";
+import { buildAnnualDashboard } from "@/lib/dashboard-analytics";
 import { formatCurrency, formatStatus, Order, OrderStatus, orderTotal, PaymentStatus } from "@/lib/data";
 import { getAllOrders, getProductCosts, ProductCostEntry } from "@/lib/firebase-store";
 
@@ -96,6 +98,7 @@ export default function AdminDashboardPage() {
   const [productCosts, setProductCosts] = useState<ProductCostEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const currentPeriod = useMemo(() => currentBogotaMonth(), []);
+  const [periodMode, setPeriodMode] = useState<"month" | "year">("month");
   const [selectedMonth, setSelectedMonth] = useState(currentPeriod.month);
   const [selectedYear, setSelectedYear] = useState(currentPeriod.year);
   const [selectedInsight, setSelectedInsight] = useState<InsightSelection>({ type: "status", value: "pendiente" });
@@ -119,6 +122,15 @@ export default function AdminDashboardPage() {
     });
     return Array.from(years).sort((a, b) => b - a);
   }, [currentPeriod.year, orders]);
+
+  const annualDashboard = useMemo(
+    () => buildAnnualDashboard(orders, productCosts, selectedYear),
+    [orders, productCosts, selectedYear]
+  );
+  const previousAnnualDashboard = useMemo(
+    () => buildAnnualDashboard(orders, productCosts, selectedYear - 1),
+    [orders, productCosts, selectedYear]
+  );
 
   const dashboard = useMemo(() => {
     const costsByProduct = new Map(productCosts.map((cost) => [cost.productId, cost]));
@@ -237,37 +249,68 @@ export default function AdminDashboardPage() {
           </p>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          <label className="grid gap-1 text-xs font-semibold uppercase tracking-wide text-[#ffd3bc]">
-            Mes
-            <select
-              value={selectedMonth}
-              onChange={(event) => setSelectedMonth(Number(event.target.value))}
-              className="focus-ring rounded-md border border-white/20 bg-white px-3 py-2 text-sm font-semibold text-[#3b2924]"
-            >
-              {monthNames.map((month, index) => (
-                <option key={month} value={index + 1}>{month}</option>
-              ))}
-            </select>
-          </label>
+        <div className="grid gap-3">
+          <div className="grid grid-cols-2 rounded-xl border border-white/15 bg-white/10 p-1" aria-label="Periodo del dashboard">
+            <button
+              type="button"
+              onClick={() => setPeriodMode("month")}
+              aria-pressed={periodMode === "month"}
+              className={`focus-ring rounded-lg px-4 py-2 text-sm font-bold transition ${periodMode === "month" ? "bg-white text-[#3b2924] shadow-sm" : "text-[#f7e7d8] hover:bg-white/10"}`}
+            >Mes</button>
+            <button
+              type="button"
+              onClick={() => setPeriodMode("year")}
+              aria-pressed={periodMode === "year"}
+              className={`focus-ring rounded-lg px-4 py-2 text-sm font-bold transition ${periodMode === "year" ? "bg-white text-[#3b2924] shadow-sm" : "text-[#f7e7d8] hover:bg-white/10"}`}
+            >Año</button>
+          </div>
 
-          <label className="grid gap-1 text-xs font-semibold uppercase tracking-wide text-[#ffd3bc]">
-            Año
-            <select
-              value={selectedYear}
-              onChange={(event) => setSelectedYear(Number(event.target.value))}
-              className="focus-ring rounded-md border border-white/20 bg-white px-3 py-2 text-sm font-semibold text-[#3b2924]"
-            >
-              {availableYears.map((year) => (
-                <option key={year} value={year}>{year}</option>
-              ))}
-            </select>
-          </label>
+          <div className={`grid gap-3 ${periodMode === "month" ? "sm:grid-cols-2" : "sm:grid-cols-1"}`}>
+            {periodMode === "month" && (
+              <label className="grid gap-1 text-xs font-semibold uppercase tracking-wide text-[#ffd3bc]">
+                Mes
+                <select
+                  value={selectedMonth}
+                  onChange={(event) => setSelectedMonth(Number(event.target.value))}
+                  className="focus-ring rounded-md border border-white/20 bg-white px-3 py-2 text-sm font-semibold text-[#3b2924]"
+                >
+                  {monthNames.map((month, index) => (
+                    <option key={month} value={index + 1}>{month}</option>
+                  ))}
+                </select>
+              </label>
+            )}
+
+            <label className="grid gap-1 text-xs font-semibold uppercase tracking-wide text-[#ffd3bc]">
+              Año
+              <select
+                value={selectedYear}
+                onChange={(event) => setSelectedYear(Number(event.target.value))}
+                className="focus-ring rounded-md border border-white/20 bg-white px-3 py-2 text-sm font-semibold text-[#3b2924]"
+              >
+                {availableYears.map((year) => (
+                  <option key={year} value={year}>{year}</option>
+                ))}
+              </select>
+            </label>
+          </div>
         </div>
       </div>
 
       {loading && <p className="mb-4 rounded-lg border border-[#ead8c7] bg-white p-4 text-sm text-[#74635c]">Cargando datos...</p>}
 
+      {!loading && (
+        periodMode === "year" ? (
+          <AnnualDashboard
+            data={annualDashboard}
+            previousData={previousAnnualDashboard.orders > 0 ? previousAnnualDashboard : undefined}
+            onSelectMonth={(month) => {
+              setSelectedMonth(month);
+              setPeriodMode("month");
+            }}
+          />
+        ) : (
+        <>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {[
           { label: "Ventas del mes", value: formatCurrency(dashboard.revenue), sub: `${dashboard.activeOrders.length} pedidos activos`, progress: paymentProgress, hint: "cobrado" },
@@ -550,6 +593,9 @@ export default function AdminDashboardPage() {
           </div>
         </article>
       </div>
+        </>
+        )
+      )}
     </section>
   );
 }

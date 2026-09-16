@@ -19,7 +19,7 @@ function AdminNav() {
   const isCreatingOrder = pathname === "/admin/pedidos" && searchParams.get("nuevo") === "1";
 
   return (
-    <aside className="rounded-lg border border-[#ead8c7] bg-white p-2 soft-shadow">
+    <aside className="min-w-0 rounded-lg border border-[#ead8c7] bg-white p-2 soft-shadow">
       <p className="hidden px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#c9657e] lg:block">
         Admin privado
       </p>
@@ -56,7 +56,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <AdminGuard>
         <div className="grid gap-6 lg:grid-cols-[220px_1fr]">
           <AdminNav />
-          <div>{children}</div>
+          <div className="min-w-0">{children}</div>
         </div>
       </AdminGuard>
     </main>
