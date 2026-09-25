@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md — Lara Bakery
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+These are the durable instructions Codex must follow when working in this repository.
 
 ## Commands
 
@@ -43,7 +43,8 @@ Firestore → lib/firebase-store.ts (all CRUD) → page/component state
 
 ### Static export constraints
 
-- Dynamic routes (`/admin/pedidos/[id]`, `/productos/[id]`) require `generateStaticParams()` — they export placeholder shells and load real data client-side on mount.
+- The legacy dynamic routes (`/admin/pedidos/[id]`, `/productos/[id]`) require `generateStaticParams()` — they export placeholder shells and load real data client-side on mount.
+- Real admin order-detail links must use the fixed static page `/admin/pedidos/detalle?id=<orderId>`. Do not route real order IDs to `/admin/pedidos/[id]` unless a static-export-compatible strategy is deliberately designed and verified.
 - `images: { unoptimized: true }` in `next.config.ts` is required for `<Image>` to work with static export.
 - All `NEXT_PUBLIC_*` env vars are baked into the build — changing them requires a full rebuild and redeploy.
 
